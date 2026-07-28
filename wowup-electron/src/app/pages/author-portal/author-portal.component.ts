@@ -133,17 +133,16 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
     }
 
     this.submitting = true;
-    this.success = "Publishing addon...";
+    this.success = this.editMode ? "Saving addon..." : "Publishing addon...";
     try {
-      const payload = this.toPayload();
       const result = this.editMode
-        ? await this._api.updateAddon(this.form.id, payload)
-        : await this._api.createAddon(payload);
-      this.savedAddon = await this._api.getPublicAddon(result.id);
-      this.populateForm(this.savedAddon);
+        ? await this._api.updateAddon(this.form.id, this.toPayload())
+        : await this._api.createAddon(this.toPayload());
+      const savedAddon = await this._api.getPublicAddon(result.id);
       await this.loadAddons();
-      this.editMode = true;
-      this.success = "Addon saved and reloaded from the public catalog.";
+      this.resetForm();
+      this.savedAddon = savedAddon;
+      this.success = "Addon saved. Load it again to make further changes.";
     } catch (error) {
       this.error =
         (error instanceof HttpErrorResponse || error instanceof AscensionApiError) && error.status === 403
@@ -178,6 +177,7 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
 
   private resetForm(): void {
     this.form = this.createEmptyForm();
+    this.form.author = this.author?.login ?? "";
     this.editMode = false;
     this.error = "";
     this.success = "";
