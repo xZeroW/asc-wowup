@@ -10,7 +10,8 @@
     {
       "provider": "github",
       "owner": "xZeroW",
-      "repo": "asc-wowup"
+      "repo": "asc-wowup",
+      "releaseType": "release"
     }
   ],
   "nodeGypRebuild": true,

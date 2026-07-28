@@ -1,6 +1,8 @@
 name: Build WowUp Electron All
 on:
-  # - push
+  push:
+    tags:
+      - "*"
   workflow_dispatch:
 
 permissions:
@@ -27,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2022,"macos-latest"]
+        os: [ubuntu-latest, windows-2022, "macos-latest"]
         node-version: [24.x]
 
     steps:
@@ -55,6 +57,16 @@ jobs:
           cd ./wowup-electron
           npm i dmg-license
 
+      - name: Validate macOS signing certificate
+        if: matrix.os == 'macos-latest'
+        env:
+          CSC_LINK: ${{ secrets.MACOS_CERT }}
+        run: |
+          if [ -z "$CSC_LINK" ]; then
+            echo "MACOS_CERT must be configured before creating a signed macOS release."
+            exit 1
+          fi
+
       - name: Build Linux App
         if: matrix.os == 'ubuntu-latest'
         env:
@@ -80,16 +92,37 @@ jobs:
 
       - name: Get ssl.com esigner zip file and unzip
         if: matrix.os == 'windows-2022'
+        uses: actions/cache@v4
+        with:
+          path: wowup-electron/electron-build/code_signer/CodeSignTool-v1.3.2-windows.zip
+          key: sslcom-codesigntool-v1.3.2
+
+      - name: Install SSL.com CodeSignTool
+        if: matrix.os == 'windows-2022'
+        shell: pwsh
         run: |
-          cd ./wowup-electron/electron-build
-          mkdir code_signer
-          cd ./code_signer
+          $codeSignerDir = "./wowup-electron/electron-build/code_signer"
+          $archive = Join-Path $codeSignerDir "CodeSignTool-v1.3.2-windows.zip"
+          New-Item -ItemType Directory -Force -Path $codeSignerDir
+
           Write-Host "Downloading CodeSignTool from GitHub releases..."
-          powershell -Command "Invoke-WebRequest -Uri 'https://github.com/SSLcom/CodeSignTool/releases/download/v1.3.2/CodeSignTool-v1.3.2-windows.zip' -OutFile 'out.zip' -Verbose"
+          if (-not (Test-Path $archive)) {
+            $ProgressPreference = "SilentlyContinue"
+            for ($attempt = 1; $attempt -le 3; $attempt++) {
+              try {
+                Invoke-WebRequest -Uri "https://github.com/SSLcom/CodeSignTool/releases/download/v1.3.2/CodeSignTool-v1.3.2-windows.zip" -OutFile $archive -TimeoutSec 600
+                break
+              } catch {
+                Remove-Item -Force -ErrorAction SilentlyContinue $archive
+                if ($attempt -eq 3) { throw }
+                Start-Sleep -Seconds (5 * $attempt)
+              }
+            }
+          }
+
           Write-Host "Expanding CodeSignTool archive..."
-          powershell -Command "Expand-Archive -Path 'out.zip' -DestinationPath '.' -Force -Verbose"
+          Expand-Archive -Path $archive -DestinationPath $codeSignerDir -Force
           Write-Host "Done extracting CodeSignTool."
-          cd ../../..
 
       - name: Build Windows App
         if: matrix.os == 'windows-2022'
