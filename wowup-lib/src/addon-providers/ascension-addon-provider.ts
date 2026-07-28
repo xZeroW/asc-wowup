@@ -6,13 +6,13 @@ import { ADDON_PROVIDER_ASCENSION } from '../constants';
 import { SourceRemovedAddonError } from '../errors';
 import { WowInstallation } from '../models';
 import { AddonChannelType, WowClientType } from '../types';
-import { getEnumName, getGameVersionList, getTocForGameType2, NetworkInterface } from '../utils';
+import { convertMarkdown, getEnumName, getGameVersionList, getTocForGameType2, NetworkInterface } from '../utils';
 
 export interface AscensionCatalogRelease {
   id: string;
   version: string;
   channel: 'stable' | 'beta';
-  folders: string[];
+  folders?: string[];
   downloadUrl: string;
   releasedAt: string;
   changelog?: string;
@@ -27,6 +27,7 @@ export interface AscensionCatalogAddon {
   thumbnailUrl?: string;
   downloads?: number;
   releasedAt?: string;
+  githubRepository?: string;
   releases: AscensionCatalogRelease[];
 }
 
@@ -106,7 +107,7 @@ export class AscensionAddonProvider extends AddonProvider {
 
   public override async getDescription(installation: WowInstallation, externalId: string): Promise<string> {
     const addon = await this.getCatalogAddon(externalId, installation);
-    return addon?.description ?? addon?.summary ?? '';
+    return convertMarkdown(addon?.description ?? addon?.summary ?? '');
   }
 
   public override async getChangelog(
@@ -186,7 +187,7 @@ export class AscensionAddonProvider extends AddonProvider {
       return undefined;
     }
 
-    const files = addon.releases
+    const files = (addon.releases ?? [])
       .map((release) => this.toSearchResultFile(release))
       .filter((file): file is AddonSearchResultFile => file !== undefined);
     if (files.length === 0) {
@@ -197,7 +198,9 @@ export class AscensionAddonProvider extends AddonProvider {
       author: addon.author,
       downloadCount: addon.downloads,
       externalId: addon.id,
-      externalUrl: `${this._websiteUrl}/addons/${addon.id}`,
+      externalUrl: addon.githubRepository
+        ? `https://github.com/${addon.githubRepository}`
+        : `${this._websiteUrl}/addons/${addon.id}`,
       files,
       name: addon.name,
       providerName: this.name,
@@ -208,7 +211,7 @@ export class AscensionAddonProvider extends AddonProvider {
   }
 
   private toSearchResultFile(release: AscensionCatalogRelease): AddonSearchResultFile | undefined {
-    if (!release?.id || !release.downloadUrl || !release.version || release.folders.length === 0) {
+    if (!release?.id || !release.downloadUrl || !release.version || !release.folders?.length) {
       return undefined;
     }
 

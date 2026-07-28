@@ -34,15 +34,17 @@ const addon: AscensionCatalogAddon = {
 class CatalogNetworkInterface implements NetworkInterface {
   public urls: string[] = [];
 
+  public constructor(private catalogAddon: AscensionCatalogAddon = addon) {}
+
   public async getJson<T>(url: string | URL): Promise<T> {
     const value = url.toString();
     this.urls.push(value);
 
     if (value.endsWith('/addons/ascension-ui')) {
-      return addon as T;
+      return this.catalogAddon as T;
     }
     if (value.startsWith(`${CATALOG_URL}/addons`)) {
-      return [addon] as T;
+      return [this.catalogAddon] as T;
     }
     throw new Error(`Unexpected URL: ${value}`);
   }
@@ -112,8 +114,25 @@ test('AscensionAddonProvider reads metadata from the addon detail endpoint', asy
   const provider = createProvider();
   const installation = createWotlkInstallation();
 
-  await expect(provider.getDescription(installation, 'ascension-ui')).resolves.toBe('A complete UI for Ascension.');
+  await expect(provider.getDescription(installation, 'ascension-ui')).resolves.toBe('<p>A complete UI for Ascension.</p>');
   await expect(provider.getChangelog(installation, 'ascension-ui', 'release-1')).resolves.toBe('Initial release.');
+});
+
+test('AscensionAddonProvider links GitHub-backed addons to their repository', async () => {
+  const network = new CatalogNetworkInterface({ ...addon, githubRepository: 'xZeroW/ascension-healbot' });
+
+  const results = await createProvider(network).getFeaturedAddons(createWotlkInstallation());
+
+  expect(results[0].externalUrl).toBe('https://github.com/xZeroW/ascension-healbot');
+});
+
+test('AscensionAddonProvider skips releases without folders', async () => {
+  const network = new CatalogNetworkInterface({
+    ...addon,
+    releases: [{ ...addon.releases[0], folders: undefined }],
+  });
+
+  await expect(createProvider(network).getFeaturedAddons(createWotlkInstallation())).resolves.toEqual([]);
 });
 
 test('AscensionAddonProvider scans only folders with an explicit catalog ID', async () => {

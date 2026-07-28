@@ -1009,8 +1009,6 @@ export class AddonService {
   }
 
   private async syncProviderAddons(installation: WowInstallation, addons: Addon[], addonProvider: AddonProvider) {
-
-
     const providerAddonIds = this.getExternalIdsForProvider(addonProvider, addons);
     if (!providerAddonIds.length) {
       return;
@@ -1054,6 +1052,7 @@ export class AddonService {
 
         addon.summary = result.summary;
         addon.thumbnailUrl = result.thumbnailUrl;
+        addon.externalUrl = result.externalUrl;
         addon.latestChangelog = latestFile?.changelog || addon.latestChangelog;
 
         if (
@@ -1100,8 +1099,6 @@ export class AddonService {
         } else {
           console.warn("No game version found", addon);
         }
-
-        addon.externalUrl = result.externalUrl;
       } finally {
         await this._addonStorage.setAsync(addon.id, addon);
       }

@@ -179,7 +179,9 @@
       (click)="closeContextMenu()"
     >
       <mat-icon class="open-in-browser-icon" svgIcon="fas:up-right-from-square"></mat-icon>
-      <span> {{ "DIALOGS.ADDON_DETAILS.VIEW_ON_PROVIDER_PREFIX" | translate }} {{ listItem.addon.providerName }} </span>
+      <span>
+        {{ "DIALOGS.ADDON_DETAILS.VIEW_ON_PROVIDER_PREFIX" | translate }} {{ getExternalProviderName(listItem.addon) }}
+      </span>
     </a>
     <!-- REINSTALL -->
     <button *ngIf="canReInstall(listItem)" mat-menu-item (click)="onReInstallAddon(listItem)">

@@ -517,6 +517,14 @@ export class MyAddonsComponent implements OnInit, OnDestroy, AfterViewInit {
     return tx === key ? providerName : tx;
   }
 
+  public getExternalProviderName(addon: Addon): string {
+    if (addon.providerName === "Ascension" && addon.externalUrl.startsWith("https://github.com/")) {
+      return "GitHub";
+    }
+
+    return addon.providerName;
+  }
+
   public isLatestUpdateColumnVisible(): boolean {
     return this.columns.find((column) => column.name === "addon.latestVersion")?.visible ?? false;
   }

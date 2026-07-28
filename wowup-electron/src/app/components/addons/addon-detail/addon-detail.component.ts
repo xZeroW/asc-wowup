@@ -140,6 +140,9 @@ export class AddonDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.summary = this.model.listItem?.addon?.summary || this.model.searchResult?.summary || "";
 
     this.externalUrl = this.model.listItem?.addon?.externalUrl || this.model.searchResult?.externalUrl || "UNKNOWN";
+    if (this.provider === "Ascension" && this.externalUrl.startsWith("https://github.com/")) {
+      this.provider = "GitHub";
+    }
 
     this.defaultImageUrl = this.model.listItem?.addon?.thumbnailUrl || this.model.searchResult?.thumbnailUrl || "";
 
