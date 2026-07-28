@@ -117,8 +117,8 @@ export class OptionsAddonSectionComponent implements OnInit, OnDestroy {
   }
 
   public async onClearAscensionAssignments(): Promise<void> {
-    const title = this._translateService.instant("PAGES.OPTIONS.ADDON.ASCENSION.CLEAR_TITLE");
-    const message = this._translateService.instant("PAGES.OPTIONS.ADDON.ASCENSION.CLEAR_MESSAGE");
+    const title: string = this._translateService.instant("PAGES.OPTIONS.ADDON.ASCENSION.CLEAR_TITLE");
+    const message: string = this._translateService.instant("PAGES.OPTIONS.ADDON.ASCENSION.CLEAR_MESSAGE");
     const confirmed = await firstValueFrom(this._dialogFactory.getConfirmDialog(title, message).afterClosed());
     if (!confirmed) {
       return;

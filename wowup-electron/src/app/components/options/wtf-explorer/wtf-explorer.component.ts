@@ -160,20 +160,20 @@ export class WtfExplorerComponent implements OnInit, OnDestroy {
   private lazyLoad() {
     this.loading$.next(true);
     this.error$.next("");
-      from(this._warcraftInstallationService.getWowInstallationsAsync())
-        .pipe(
-          first(),
-          switchMap((installations) =>
-            from(
-              Promise.all(
-                installations.map(async (installation) => ({
-                  ...installation,
-                  displayName: await this._warcraftInstallationService.getInstallationDisplayName(installation),
-                })),
-              ),
+    from(this._warcraftInstallationService.getWowInstallationsAsync())
+      .pipe(
+        first(),
+        switchMap((installations) =>
+          from(
+            Promise.all(
+              installations.map(async (installation) => ({
+                ...installation,
+                displayName: await this._warcraftInstallationService.getInstallationDisplayName(installation),
+              })),
             ),
           ),
-          tap((installations) => {
+        ),
+        tap((installations) => {
           this.installations = installations;
 
           const installation = this.installations[0];
@@ -186,7 +186,7 @@ export class WtfExplorerComponent implements OnInit, OnDestroy {
         catchError((e) => {
           console.error(e);
           return of(undefined);
-        })
+        }),
       )
       .subscribe();
 
