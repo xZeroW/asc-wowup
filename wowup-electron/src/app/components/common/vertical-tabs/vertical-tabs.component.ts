@@ -11,6 +11,7 @@ import {
   TAB_INDEX_MY_ADDONS,
   TAB_INDEX_NEWS,
   TAB_INDEX_SETTINGS,
+  TAB_INDEX_AUTHOR_PORTAL,
   TRUE_STR,
 } from "../../../../common/constants";
 import { AppConfig } from "../../../../environments/environment";
@@ -123,9 +124,20 @@ export class VerticalTabsComponent implements OnInit, OnDestroy {
     },
   };
 
+  private authorPortalTab: Tab = {
+    titleKey: "Author portal",
+    tooltipKey: "Author portal",
+    icon: "fas:pen",
+    isSelected$: this.sessionService.selectedHomeTab$.pipe(map((result) => result === TAB_INDEX_AUTHOR_PORTAL)),
+    isDisabled$: this.sessionService.enableControls$.pipe(map((enabled) => !enabled)),
+    onClick: (): void => {
+      this.sessionService.selectedHomeTab = TAB_INDEX_AUTHOR_PORTAL;
+    },
+  };
+
   public tabsTop: Tab[] = [this.myAddonsTab, this.getAddonsTab];
 
-  public tabsBottom: Tab[] = [this.settingsTab];
+  public tabsBottom: Tab[] = [this.authorPortalTab, this.settingsTab];
 
   public constructor(
     public electronService: ElectronService,

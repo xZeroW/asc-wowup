@@ -14,6 +14,8 @@ import {
   TAB_INDEX_MY_ADDONS,
   TAB_INDEX_NEWS,
   TAB_INDEX_SETTINGS,
+  TAB_INDEX_AUTHOR_PORTAL,
+  APP_PROTOCOL_NAME,
 } from "../../../common/constants";
 import { AppConfig } from "../../../environments/environment";
 import { InstallFromProtocolDialogComponent } from "../../components/addons/install-from-protocol-dialog/install-from-protocol-dialog.component";
@@ -49,6 +51,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   public readonly TAB_INDEX_ABOUT = TAB_INDEX_ABOUT;
   public readonly TAB_INDEX_NEWS = TAB_INDEX_NEWS;
   public readonly TAB_INDEX_SETTINGS = TAB_INDEX_SETTINGS;
+  public readonly TAB_INDEX_AUTHOR_PORTAL = TAB_INDEX_AUTHOR_PORTAL;
 
   public hasWowClient = false;
   public appReady = false;
@@ -82,6 +85,15 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         }),
       )
       .subscribe();
+
+    this.electronService.customProtocol$
+      .pipe(
+        takeUntil(this._onDestroy$),
+        filter((protocol) => protocol === `${APP_PROTOCOL_NAME}://auth/success`),
+      )
+      .subscribe(() => {
+        this.sessionService.selectedHomeTab = TAB_INDEX_AUTHOR_PORTAL;
+      });
 
     const scanErrorSub = this._addonService.scanError$.subscribe(this.onAddonScanError);
     const addonInstallErrorSub = this._addonService.addonInstalled$.subscribe(this.onAddonInstalledEvent);

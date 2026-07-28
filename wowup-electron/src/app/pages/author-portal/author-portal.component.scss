@@ -1,0 +1,88 @@
+.author-portal {
+  height: 100%;
+  overflow: auto;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+.portal-card {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+.portal-header,
+.author-bar,
+.section-header,
+.submit-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.portal-header,
+.section-header {
+  justify-content: space-between;
+}
+.author-bar {
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+.author-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+.full-width {
+  width: 100%;
+}
+.state {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+.message {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+}
+.error {
+  background: rgba(192, 57, 43, 0.25);
+}
+.success {
+  background: rgba(39, 174, 96, 0.25);
+}
+.releases,
+.saved-addon {
+  margin-top: 1.5rem;
+}
+.release-card,
+.saved-addon {
+  padding: 1rem;
+  margin-top: 0.75rem;
+}
+.submit-row {
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+@media (max-width: 700px) {
+  .author-portal {
+    padding: 0.75rem;
+  }
+  .portal-card {
+    padding: 1rem;
+  }
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+  .portal-header,
+  .author-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

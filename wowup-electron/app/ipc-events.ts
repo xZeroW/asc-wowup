@@ -79,6 +79,7 @@ import {
   IPC_CURSE_GET_SCAN_RESULTS,
   IPC_OW_IS_CMP_REQUIRED,
   IPC_OW_OPEN_CMP,
+  IPC_ASCENSION_AUTHOR_API_REQUEST,
   ZOOM_FACTOR_KEY,
 } from "../src/common/constants";
 
@@ -152,7 +153,7 @@ async function getSymlinkDirs(basePath: string, files: fs.Dirent[]): Promise<Sym
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 function handle(
   channel: RendererChannels,
-  listener: (event: IpcMainInvokeEvent, ...args: any[]) => Promise<void> | any
+  listener: (event: IpcMainInvokeEvent, ...args: any[]) => Promise<void> | any,
 ) {
   ipcMain.handle(channel, listener);
 }
@@ -164,6 +165,29 @@ export function setPendingOpenUrl(...openUrls: string[]): void {
 
 export function initializeIpcHandlers(window: BrowserWindow): void {
   log.info("process.versions", process.versions);
+
+  handle(
+    IPC_ASCENSION_AUTHOR_API_REQUEST,
+    async (_event, request: { method: string; path: string; body?: unknown }) => {
+      const allowed =
+        (request.method === "GET" && request.path === "/v1/auth/me") ||
+        (request.method === "POST" && request.path === "/v1/auth/logout") ||
+        (request.method === "POST" && request.path === "/v1/ascension/addons") ||
+        (request.method === "PUT" && /^\/v1\/ascension\/addons\/[^/]+$/.test(request.path));
+      if (!allowed) {
+        throw new Error("Invalid Ascension author API request");
+      }
+
+      const response = await window.webContents.session.fetch(`https://wowup-api.vercel.app${request.path}`, {
+        method: request.method,
+        headers: request.body === undefined ? undefined : { "Content-Type": "application/json" },
+        body: request.body === undefined ? undefined : JSON.stringify(request.body),
+        credentials: "include",
+      });
+      const text = await response.text();
+      return { status: response.status, body: text ? JSON.parse(text) : undefined };
+    },
+  );
 
   /* eslint-disable @typescript-eslint/no-unsafe-argument */
   ipcMain.on("webview-log", (evt, level, ...data) => {
@@ -197,10 +221,10 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
     (
       _evt,
       key: string,
-      type: "string" | "boolean" | "integer" | "float" | "double" | "url" | "array" | "dictionary"
+      type: "string" | "boolean" | "integer" | "float" | "double" | "url" | "array" | "dictionary",
     ) => {
       return systemPreferences.getUserDefault(key, type);
-    }
+    },
   );
 
   handle("clipboard-read-text", () => {
@@ -321,8 +345,8 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
     const taskResults = await firstValueFrom(
       from(filePaths).pipe(
         mergeMap((filePath) => from(statFile(filePath)), 3),
-        toArray()
-      )
+        toArray(),
+      ),
     );
 
     taskResults.forEach((r) => (results[r.path] = r.fsStats));
@@ -384,8 +408,8 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
       const taskResults = await firstValueFrom(
         from(filePaths).pipe(
           mergeMap((folder) => from(new CurseFolderScanner().scanFolder(folder)), 2),
-          toArray()
-        )
+          toArray(),
+        ),
       );
 
       return taskResults;
@@ -399,8 +423,8 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
     const taskResults = await firstValueFrom(
       from(filePaths).pipe(
         mergeMap((folder) => from(new WowUpFolderScanner(folder).scanFolder()), 3),
-        toArray()
-      )
+        toArray(),
+      ),
     );
 
     return taskResults;
@@ -473,7 +497,6 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
   handle(IPC_READ_FILE_BUFFER_CHANNEL, async (evt, filePath: string) => {
     return await fsp.readFile(filePath);
   });
-
 
   handle(IPC_WRITE_FILE_CHANNEL, async (evt, filePath: string, contents: string) => {
     return await fsp.writeFile(filePath, contents, { encoding: "utf-8", mode: DEFAULT_FILE_MODE });

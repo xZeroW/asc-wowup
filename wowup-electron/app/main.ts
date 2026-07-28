@@ -136,6 +136,27 @@ createAppMenu(win);
 // WowUp Protocol Handler
 app.setAsDefaultProtocolClient(APP_PROTOCOL_NAME);
 
+// OAuth runs in a popup so the main renderer remains available. Electron cancels custom
+// scheme navigations in that popup, so forward the completion signal to the main window.
+app.on("browser-window-created", (_event, authWindow) => {
+  let authComplete = false;
+  const onNavigation = (event: Electron.Event, url: string) => {
+    if (authComplete || url !== `${APP_PROTOCOL_NAME}://auth/success`) {
+      return;
+    }
+
+    authComplete = true;
+    event.preventDefault();
+    authWindow.close();
+    win?.show();
+    win?.focus();
+    win?.webContents.send(IPC_CUSTOM_PROTOCOL_RECEIVED, url);
+  };
+
+  authWindow.webContents.on("will-navigate", onNavigation);
+  authWindow.webContents.on("will-redirect", onNavigation);
+});
+
 // Set the app ID so that our notifications work correctly on Windows
 app.setAppUserModelId(AppEnv.buildFlavor === "ow" ? APP_USER_MODEL_ID_CF : APP_USER_MODEL_ID);
 

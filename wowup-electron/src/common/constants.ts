@@ -118,6 +118,7 @@ export const IPC_WARCRAFT_GET_EXECUTABLE_NAME = "warcraft-get-executable-name";
 export const IPC_WARCRAFT_GET_CLIENT_TYPE_FOR_BINARY = "warcraft-get-client-type-for-binary";
 export const IPC_WARCRAFT_IS_WOW_APPLICATION = "warcraft-is-wow-application";
 export const IPC_WARCRAFT_GET_EXECUTABLE_EXTENSION = "warcraft-get-executable-extension";
+export const IPC_ASCENSION_AUTHOR_API_REQUEST = "ascension-author-api-request";
 
 // IPC STORAGE
 export const IPC_STORE_GET_OBJECT = "store-get-object";
@@ -232,6 +233,7 @@ export const TAB_INDEX_GET_ADDONS = 1;
 export const TAB_INDEX_ABOUT = 2;
 export const TAB_INDEX_NEWS = 3;
 export const TAB_INDEX_SETTINGS = 4;
+export const TAB_INDEX_AUTHOR_PORTAL = 5;
 
 export const USER_ACTION_BROWSE_CATEGORY = "browse-category";
 export const USER_ACTION_OPEN_LINK = "open-link";

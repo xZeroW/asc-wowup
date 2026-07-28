@@ -20,6 +20,7 @@ import {
   faCoins,
   faCompressArrowsAlt,
   faPencilAlt,
+  faPen,
   faArrowDown,
   faCheckCircle,
   faDiceD6,
@@ -51,7 +52,10 @@ import { faDiscord, faGithub, faPatreon } from "@fortawesome/free-brands-svg-ico
   providedIn: "root",
 })
 export class IconService {
-  public constructor(private _matIconRegistry: MatIconRegistry, private _sanitizer: DomSanitizer) {
+  public constructor(
+    private _matIconRegistry: MatIconRegistry,
+    private _sanitizer: DomSanitizer,
+  ) {
     this.addSvg(faAngleDoubleDown);
     this.addSvg(faArrowUp);
     this.addSvg(faArrowDown);
@@ -74,6 +78,7 @@ export class IconService {
     this.addSvg(faCoins);
     this.addSvg(faCompressArrowsAlt);
     this.addSvg(faPencilAlt);
+    this.addSvg(faPen);
     this.addSvg(faCheckCircle);
     this.addSvg(faDiceD6);
     this.addSvg(faSearch);
@@ -105,7 +110,7 @@ export class IconService {
     this._matIconRegistry.addSvgIconLiteralInNamespace(
       icon.prefix,
       icon.iconName,
-      this._sanitizer.bypassSecurityTrustHtml(svg)
+      this._sanitizer.bypassSecurityTrustHtml(svg),
     );
   }
 }

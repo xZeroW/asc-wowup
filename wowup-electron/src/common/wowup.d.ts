@@ -25,6 +25,7 @@ declare type MainChannels =
 
 // Events that can be sent from renderer to main
 declare type RendererChannels =
+  | "ascension-author-api-request"
   | "addons-get-all"
   | "addons-get-all-for-installation"
   | "addons-get-all-for-provider"

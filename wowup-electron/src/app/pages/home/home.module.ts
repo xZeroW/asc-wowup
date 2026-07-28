@@ -13,6 +13,7 @@ import { CommonUiModule } from "../../modules/common-ui.module";
 import { OptionsModule } from "../../modules/options.module";
 import { PipesModule } from "../../modules/pipes.module";
 import { AccountPageComponent } from "../account-page/account-page.component";
+import { AuthorPortalComponent } from "../author-portal/author-portal.component";
 import { GetAddonsComponent } from "../get-addons/get-addons.component";
 import { MyAddonsComponent } from "../my-addons/my-addons.component";
 import { OptionsComponent } from "../options/options.component";
@@ -26,6 +27,7 @@ import { HomeComponent } from "./home.component";
     GetAddonsComponent,
     OptionsComponent,
     AccountPageComponent,
+    AuthorPortalComponent,
     NewsPanelComponent,
   ],
   imports: [

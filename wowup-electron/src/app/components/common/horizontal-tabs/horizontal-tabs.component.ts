@@ -10,6 +10,7 @@ import {
   TAB_INDEX_MY_ADDONS,
   TAB_INDEX_NEWS,
   TAB_INDEX_SETTINGS,
+  TAB_INDEX_AUTHOR_PORTAL,
 } from "../../../../common/constants";
 import { AppConfig } from "../../../../environments/environment";
 import { ElectronService } from "../../../services";
@@ -44,7 +45,7 @@ export class HorizontalTabsComponent implements OnInit {
     icon: "fas:dice-d6",
     isSelected$: this.sessionService.selectedHomeTab$.pipe(map((result) => result === TAB_INDEX_MY_ADDONS)),
     isDisabled$: this._warcraftInstallationService.wowInstallations$.pipe(
-      map((installations) => installations.length === 0)
+      map((installations) => installations.length === 0),
     ),
     onClick: (): void => {
       this.sessionService.selectedHomeTab = TAB_INDEX_MY_ADDONS;
@@ -57,7 +58,7 @@ export class HorizontalTabsComponent implements OnInit {
     icon: "fas:magnifying-glass",
     isSelected$: this.sessionService.selectedHomeTab$.pipe(map((result) => result === TAB_INDEX_GET_ADDONS)),
     isDisabled$: this._warcraftInstallationService.wowInstallations$.pipe(
-      map((installations) => installations.length === 0)
+      map((installations) => installations.length === 0),
     ),
     onClick: (): void => {
       this.sessionService.selectedHomeTab = TAB_INDEX_GET_ADDONS;
@@ -98,14 +99,25 @@ export class HorizontalTabsComponent implements OnInit {
     },
   };
 
+  private authorPortalTab: Tab = {
+    titleKey: "Author portal",
+    tooltipKey: "Author portal",
+    icon: "fas:pen",
+    isSelected$: this.sessionService.selectedHomeTab$.pipe(map((result) => result === TAB_INDEX_AUTHOR_PORTAL)),
+    isDisabled$: of(false),
+    onClick: (): void => {
+      this.sessionService.selectedHomeTab = TAB_INDEX_AUTHOR_PORTAL;
+    },
+  };
+
   public tabsTop: Tab[] = [this.myAddonsTab, this.getAddonsTab, this.newsTab];
 
-  public tabsBottom: Tab[] = [this.settingsTab];
+  public tabsBottom: Tab[] = [this.authorPortalTab, this.settingsTab];
 
   public constructor(
     public electronService: ElectronService,
     public sessionService: SessionService,
-    private _warcraftInstallationService: WarcraftInstallationService
+    private _warcraftInstallationService: WarcraftInstallationService,
   ) {}
 
   public ngOnInit(): void {}

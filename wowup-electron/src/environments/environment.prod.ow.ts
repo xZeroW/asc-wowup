@@ -21,6 +21,7 @@ export const AppConfig = {
     apiKey: "{{CURSEFORGE_API_KEY}}",
   },
   ascension: {
+    apiUrl: "https://wowup-api.vercel.app",
     catalogUrl: "https://wowup-api.vercel.app/v1/ascension",
     websiteUrl: "https://wowup.io/ascension",
   },

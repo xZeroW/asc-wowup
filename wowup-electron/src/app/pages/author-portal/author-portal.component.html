@@ -1,0 +1,162 @@
+<div class="tab-container author-portal text-1">
+  <div class="portal-card bg-secondary-4 mat-elevation-z8 rounded">
+    <div class="portal-header">
+      <div>
+        <h1>Addon author portal</h1>
+        <p class="text-2">Publish and maintain Ascension catalog addons.</p>
+      </div>
+      <button *ngIf="author" class="wu-btn wu-btn-warning" [disabled]="submitting" (click)="logout()">Sign out</button>
+    </div>
+
+    <div *ngIf="loading" class="state">
+      <app-progress-spinner message="Checking sign-in status"></app-progress-spinner>
+    </div>
+    <div *ngIf="!loading && error" class="message error">{{ error }}</div>
+
+    <section *ngIf="!loading && !author" class="state">
+      <h2>Publish with your GitHub account</h2>
+      <p>Sign in with GitHub to publish a new addon or edit an addon you own.</p>
+      <button class="wu-btn wu-btn-primary" (click)="signIn()">Sign in with GitHub</button>
+    </section>
+
+    <section *ngIf="!loading && author">
+      <div class="author-bar">
+        <span
+          >Signed in as <strong>{{ author.login }}</strong></span
+        >
+      </div>
+
+      <div *ngIf="success" class="message success">{{ success }}</div>
+      <form novalidate>
+        <div class="field-grid">
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput name="name" [(ngModel)]="form.name" required />
+            <mat-error *ngIf="validationErrors.name">{{ validationErrors.name }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Author</mat-label>
+            <input matInput name="author" [(ngModel)]="form.author" required />
+            <mat-error *ngIf="validationErrors.author">{{ validationErrors.author }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>GitHub repository</mat-label>
+            <input
+              matInput
+              name="githubRepository"
+              [(ngModel)]="form.githubRepository"
+              placeholder="owner/repository or https://github.com/owner/repository"
+            />
+            <mat-hint>Use owner/repository or a GitHub URL. Leave blank for a manual-release addon.</mat-hint>
+            <mat-error *ngIf="validationErrors.githubRepository">{{ validationErrors.githubRepository }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Installed folders</mat-label>
+            <input matInput name="folders" [(ngModel)]="form.foldersText" placeholder="AddonFolder, AnotherFolder" />
+            <mat-hint>Required for GitHub addons. Separate folders with commas.</mat-hint>
+            <mat-error *ngIf="validationErrors.folders">{{ validationErrors.folders }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Thumbnail URL</mat-label>
+            <input matInput name="thumbnailUrl" [(ngModel)]="form.thumbnailUrl" type="url" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field class="full-width">
+          <mat-label>Summary</mat-label>
+          <input matInput name="summary" [(ngModel)]="form.summary" />
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput name="description" [(ngModel)]="form.description" rows="5"></textarea>
+        </mat-form-field>
+
+        <section *ngIf="!form.githubRepository.trim()" class="releases">
+          <div class="section-header">
+            <h2>Manual releases</h2>
+            <button type="button" class="wu-btn wu-btn-flat" (click)="addRelease()">Add release</button>
+          </div>
+          <div *ngIf="validationErrors.releases" class="message error">{{ validationErrors.releases }}</div>
+          <div *ngFor="let release of form.releases; let i = index" class="release-card bg-secondary-3 rounded">
+            <div class="section-header">
+              <h3>Release {{ i + 1 }}</h3>
+              <button type="button" class="wu-btn wu-btn-icon" aria-label="Remove release" (click)="removeRelease(i)">
+                <mat-icon svgIcon="fas:xmark"></mat-icon>
+              </button>
+            </div>
+            <div class="field-grid">
+              <mat-form-field
+                ><mat-label>Release ID</mat-label
+                ><input matInput [name]="'release-id-' + i" [(ngModel)]="release.id" required /><mat-error
+                  *ngIf="validationErrors['release-' + i + '-id']"
+                  >{{ validationErrors["release-" + i + "-id"] }}</mat-error
+                ></mat-form-field
+              >
+              <mat-form-field
+                ><mat-label>Version</mat-label
+                ><input matInput [name]="'release-version-' + i" [(ngModel)]="release.version" required /><mat-error
+                  *ngIf="validationErrors['release-' + i + '-version']"
+                  >{{ validationErrors["release-" + i + "-version"] }}</mat-error
+                ></mat-form-field
+              >
+              <mat-form-field
+                ><mat-label>Channel</mat-label
+                ><mat-select [name]="'release-channel-' + i" [(ngModel)]="release.channel"
+                  ><mat-option value="stable">Stable</mat-option><mat-option value="beta">Beta</mat-option></mat-select
+                ></mat-form-field
+              >
+              <mat-form-field
+                ><mat-label>Folders</mat-label
+                ><input
+                  matInput
+                  [name]="'release-folders-' + i"
+                  [(ngModel)]="release.foldersText"
+                  placeholder="AddonFolder"
+                  required
+                /><mat-error *ngIf="validationErrors['release-' + i + '-folders']">{{
+                  validationErrors["release-" + i + "-folders"]
+                }}</mat-error></mat-form-field
+              >
+              <mat-form-field
+                ><mat-label>Download URL</mat-label
+                ><input
+                  matInput
+                  [name]="'release-url-' + i"
+                  [(ngModel)]="release.downloadUrl"
+                  type="url"
+                  required
+                /><mat-error *ngIf="validationErrors['release-' + i + '-downloadUrl']">{{
+                  validationErrors["release-" + i + "-downloadUrl"]
+                }}</mat-error></mat-form-field
+              >
+              <mat-form-field
+                ><mat-label>Released at (ISO)</mat-label
+                ><input
+                  matInput
+                  [name]="'release-date-' + i"
+                  [(ngModel)]="release.releasedAt"
+                  placeholder="2026-01-01T12:00:00Z"
+                  required
+                /><mat-error *ngIf="validationErrors['release-' + i + '-releasedAt']">{{
+                  validationErrors["release-" + i + "-releasedAt"]
+                }}</mat-error></mat-form-field
+              >
+            </div>
+          </div>
+        </section>
+
+        <div class="submit-row">
+          <button class="wu-btn wu-btn-primary" type="button" [disabled]="submitting" (click)="onPublish($event)">
+            {{ submitting ? "Saving..." : editMode ? "Save changes" : "Publish addon" }}
+          </button>
+        </div>
+      </form>
+
+      <section *ngIf="savedAddon" class="saved-addon bg-secondary-3 rounded">
+        <h2>Published addon</h2>
+        <strong>{{ savedAddon.name }}</strong> by {{ savedAddon.author }}
+        <p *ngIf="savedAddon.summary">{{ savedAddon.summary }}</p>
+      </section>
+    </section>
+  </div>
+</div>
