@@ -135,19 +135,19 @@ export class AscensionAddonProvider extends AddonProvider {
     const addons = await this.getCatalogAddons(installation);
     for (const addonFolder of addonFolders) {
       const toc = getTocForGameType2(addonFolder, installation.clientType);
-      if (!toc?.ascensionAddonId) {
+      if (!toc) {
         continue;
       }
 
-      const addon = addons.find((candidate) => candidate.externalId === toc.ascensionAddonId);
-      if (!addon) {
-        continue;
-      }
-
-      const file = addon.files?.find(
+      const addon = addons.find((candidate) =>
+        candidate.files?.some(
+          (file) => file.channelType === addonChannelType && file.folders.includes(addonFolder.name),
+        ),
+      );
+      const file = addon?.files?.find(
         (candidate) => candidate.channelType === addonChannelType && candidate.folders.includes(addonFolder.name),
       );
-      if (!file) {
+      if (!addon || !file) {
         continue;
       }
 

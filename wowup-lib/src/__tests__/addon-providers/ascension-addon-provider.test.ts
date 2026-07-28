@@ -135,7 +135,7 @@ test('AscensionAddonProvider skips releases without folders', async () => {
   await expect(createProvider(network).getFeaturedAddons(createWotlkInstallation())).resolves.toEqual([]);
 });
 
-test('AscensionAddonProvider scans only folders with an explicit catalog ID', async () => {
+test('AscensionAddonProvider scans catalog folders without TOC metadata', async () => {
   const provider = createProvider();
   const toc: Toc = {
     dependencyList: [],
@@ -151,10 +151,6 @@ test('AscensionAddonProvider scans only folders with an explicit catalog ID', as
     tocs: [toc],
   };
 
-  await provider.scan(createWotlkInstallation(), AddonChannelType.Stable, [addonFolder]);
-  expect(addonFolder.matchingAddon).toBeUndefined();
-
-  toc.ascensionAddonId = 'ascension-ui';
   await provider.scan(createWotlkInstallation(), AddonChannelType.Stable, [addonFolder]);
 
   expect(provider.allowReScan).toBe(true);

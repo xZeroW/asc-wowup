@@ -57,24 +57,6 @@ choco install wowup
 
 ## Ascension Addon Authors
 
-### Make an addon recognizable by WowUp
-
-WowUp matches Ascension addons only by an explicit ID in a `.toc` file. To make an installed addon recognizable:
-
-1. Add the following metadata line to the primary `.toc` file in each addon folder that should be recognized. Use the catalog addon's `id` as the value.
-
-```text
-## X-WowUp-Ascension-ID: elvui-ascension
-```
-
-2. Ensure the value exactly matches the catalog record's top-level `id`, such as `"id": "elvui-ascension"`. It is not the release `id`, version, folder name, or display name.
-3. Publish the changed `.toc` file in every release ZIP. The `.toc` file must remain inside its addon directory at the ZIP root.
-4. In WowUp, rescan the Ascension installation after replacing an existing addon. If it was previously assigned incorrectly, clear its Ascension assignments in Options and rescan.
-
-For multi-folder addons, add the same metadata line to the primary `.toc` file in every folder listed in the release's `folders` field. The folder name must also be listed in that field so WowUp can associate it with the release.
-
-Folder names, titles, authors, and versions are never used to identify Ascension addons. The metadata key must be written exactly as `X-WowUp-Ascension-ID`; shortened keys such as `X-WowUp-Asc` are not recognized.
-
 ### Publish addon ZIPs from GitHub
 
 WowUp downloads and extracts the ZIP at a release's `downloadUrl`. Publish a GitHub Release asset rather than using GitHub's automatically generated source-code ZIP: a source archive usually adds a repository-name wrapper folder and includes files that are not part of the addon.
