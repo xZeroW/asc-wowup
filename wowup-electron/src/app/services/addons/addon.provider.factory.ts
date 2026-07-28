@@ -18,8 +18,9 @@ import { Subject } from "rxjs";
 import { PreferenceStorageService } from "../storage/preference-storage.service";
 import { SensitiveStorageService } from "../storage/sensitive-storage.service";
 import { UiMessageService } from "../ui-message/ui-message.service";
+import { AddonStorageService } from "../storage/addon-storage.service";
 import { CurseAddonProvider } from "../../addon-providers/curse-addon-provider";
-import { WowUpAddonProvider, WowInterfaceAddonProvider, TukUiAddonProvider } from "wowup-lib-core";
+import { AscensionAddonProvider, WowUpAddonProvider, WowInterfaceAddonProvider, TukUiAddonProvider } from "wowup-lib-core";
 import { AppConfig } from "../../../environments/environment";
 import { GenericNetworkInterface } from "../../business-objects/generic-network-interface";
 import { WagoAddonProvider } from "../../addon-providers/wago-addon-provider";
@@ -37,6 +38,7 @@ export class AddonProviderFactory {
   private _wowupNetworkInterface: GenericNetworkInterface;
   private _wowInterfaceNetworkInterface: GenericNetworkInterface;
   private _tukuiNetworkInterface: GenericNetworkInterface;
+  private _ascensionNetworkInterface: GenericNetworkInterface;
 
   public constructor(
     private _cachingService: CachingService,
@@ -51,6 +53,7 @@ export class AddonProviderFactory {
     private _preferenceStorageService: PreferenceStorageService,
     private _sensitiveStorageService: SensitiveStorageService,
     private _uiMessageService: UiMessageService,
+    private _addonStorageService: AddonStorageService,
   ) {
     this._wowupNetworkInterface = new GenericNetworkInterface(
       this._networkService.getCircuitBreaker(
@@ -75,6 +78,14 @@ export class AddonProviderFactory {
         AppConfig.wowUpHubHttpTimeoutMs,
       ),
     );
+
+    this._ascensionNetworkInterface = new GenericNetworkInterface(
+      this._networkService.getCircuitBreaker(
+        "ascension_addon_provider",
+        AppConfig.defaultHttpResetTimeoutMs,
+        AppConfig.defaultHttpTimeoutMs,
+      ),
+    );
   }
 
   /** This is part of the APP_INITIALIZER and called before the app is bootstrapped */
@@ -87,6 +98,7 @@ export class AddonProviderFactory {
       this.createRaiderIoAddonProvider(),
       this.createWowUpCompanionAddonProvider(),
       this.createWowUpAddonProvider(),
+      this.createAscensionAddonProvider(),
     ];
 
     if (AppConfig.wago.enabled) {
@@ -105,6 +117,9 @@ export class AddonProviderFactory {
 
     for (const provider of providers) {
       await this.setProviderState(provider);
+      if (!provider.enabled) {
+        await this.clearProviderUpdates(provider.name);
+      }
       this._providerMap.set(provider.name, provider);
     }
   }
@@ -135,6 +150,10 @@ export class AddonProviderFactory {
       enabled: enabled,
       canEdit: true,
     });
+
+    if (!enabled) {
+      await this.clearProviderUpdates(type);
+    }
 
     provider.enabled = enabled;
     this._addonProviderChangeSrc.next(provider);
@@ -178,6 +197,14 @@ export class AddonProviderFactory {
 
   public createWowUpAddonProvider(): WowUpAddonProvider {
     return new WowUpAddonProvider(AppConfig.wowUpHubUrl, AppConfig.wowUpWebsiteUrl, this._wowupNetworkInterface);
+  }
+
+  public createAscensionAddonProvider(): AscensionAddonProvider {
+    return new AscensionAddonProvider(
+      AppConfig.ascension.catalogUrl,
+      AppConfig.ascension.websiteUrl,
+      this._ascensionNetworkInterface,
+    );
   }
 
   public createZipAddonProvider(): ZipAddonProvider {
@@ -309,4 +336,15 @@ export class AddonProviderFactory {
       provider.enabled = state.enabled;
     }
   };
+
+  private async clearProviderUpdates(providerName: string): Promise<void> {
+    const addons = await this._addonStorageService.getAllForProviderAsync(providerName);
+    for (const addon of addons) {
+      addon.externalLatestReleaseId = addon.installedExternalReleaseId;
+      addon.latestChangelog = undefined;
+      addon.latestChangelogVersion = undefined;
+      addon.latestVersion = addon.installedVersion;
+      await this._addonStorageService.setAsync(addon.id, addon);
+    }
+  }
 }
