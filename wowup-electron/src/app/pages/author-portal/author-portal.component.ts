@@ -42,10 +42,10 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
   ) {}
 
   public ngOnInit(): void {
-    this.loadAuthor();
+    void this.loadAuthor();
     this._electronService.customProtocol$.pipe(takeUntil(this._destroy$)).subscribe((protocol) => {
       if (protocol === "wowup://auth/success") {
-        this.loadAuthor();
+        void this.loadAuthor();
       }
     });
   }
