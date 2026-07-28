@@ -114,7 +114,7 @@ jobs:
         run: |
           VERSION="${VERSION#v}"
           mkdir dist
-          zip -r "dist/MyAscensionAddon-${VERSION}.zip" MyAscensionAddon
+          git archive --format=zip --prefix=YOUR_ADDON_NAME/ --output="dist/YOUR_ADDON_NAME-${VERSION}.zip" HEAD
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
