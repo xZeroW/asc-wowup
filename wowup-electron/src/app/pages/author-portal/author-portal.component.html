@@ -24,6 +24,19 @@
         <span
           >Signed in as <strong>{{ author.login }}</strong></span
         >
+        <div class="author-actions">
+          <mat-form-field>
+            <mat-label>Edit an addon</mat-label>
+            <mat-select [(ngModel)]="selectedAddonId" [disabled]="loadingAddon || submitting">
+              <mat-option *ngFor="let addon of addons" [value]="addon.id"
+                >{{ addon.name }} by {{ addon.author }}</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+          <button class="wu-btn wu-btn-flat" [disabled]="loadingAddon || submitting" (click)="loadForEdit()">
+            {{ loadingAddon ? "Loading..." : "Edit" }}
+          </button>
+        </div>
       </div>
 
       <div *ngIf="success" class="message success">{{ success }}</div>

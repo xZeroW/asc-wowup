@@ -86,6 +86,10 @@ export class AscensionAuthorApiService {
     );
   }
 
+  public getOwnedAddons(): Promise<AscensionAddon[]> {
+    return this.request<AscensionAddon[]>("GET", "/v1/ascension/addons/mine");
+  }
+
   public getGithubLoginUrl(): string {
     return `${this._apiUrl}/v1/auth/github`;
   }

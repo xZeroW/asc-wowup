@@ -26,11 +26,14 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
   public author?: AscensionAuthor;
   public loading = true;
   public submitting = false;
+  public loadingAddon = false;
   public editMode = false;
   public error = "";
   public success = "";
   public validationErrors: Record<string, string> = {};
   public savedAddon?: AscensionAddon;
+  public addons: AscensionAddon[] = [];
+  public selectedAddonId = "";
   public form = this.createEmptyForm();
 
   public constructor(
@@ -59,6 +62,9 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
       this.author = await this._api.getAuthor();
       if (this.author && !this.form.author) {
         this.form.author = this.author.login;
+      }
+      if (this.author) {
+        await this.loadAddons();
       }
     } catch (error) {
       this.error = this.getApiError(error, "Unable to check your sign-in status.");
@@ -89,6 +95,25 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
     this.form.releases.push(this.createRelease());
   }
 
+  public async loadForEdit(): Promise<void> {
+    if (!this.selectedAddonId) {
+      this.error = "Select an addon to edit.";
+      return;
+    }
+
+    this.loadingAddon = true;
+    this.error = "";
+    this.success = "";
+    try {
+      this.populateForm(await this._api.getPublicAddon(this.selectedAddonId));
+      this.editMode = true;
+    } catch (error) {
+      this.error = this.getApiError(error, "Unable to load this addon.");
+    } finally {
+      this.loadingAddon = false;
+    }
+  }
+
   public removeRelease(index: number): void {
     this.form.releases.splice(index, 1);
   }
@@ -116,6 +141,7 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
         : await this._api.createAddon(payload);
       this.savedAddon = await this._api.getPublicAddon(result.id);
       this.populateForm(this.savedAddon);
+      await this.loadAddons();
       this.editMode = true;
       this.success = "Addon saved and reloaded from the public catalog.";
     } catch (error) {
@@ -140,6 +166,10 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
       thumbnailUrl: "",
       releases: [] as ReleaseForm[],
     };
+  }
+
+  private async loadAddons(): Promise<void> {
+    this.addons = await this._api.getOwnedAddons();
   }
 
   private createRelease(): ReleaseForm {

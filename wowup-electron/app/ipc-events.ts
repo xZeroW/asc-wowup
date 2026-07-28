@@ -171,6 +171,7 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
     async (_event, request: { method: string; path: string; body?: unknown }) => {
       const allowed =
         (request.method === "GET" && request.path === "/v1/auth/me") ||
+        (request.method === "GET" && request.path === "/v1/ascension/addons/mine") ||
         (request.method === "POST" && request.path === "/v1/auth/logout") ||
         (request.method === "POST" && request.path === "/v1/ascension/addons") ||
         (request.method === "PUT" && /^\/v1\/ascension\/addons\/[^/]+$/.test(request.path));
