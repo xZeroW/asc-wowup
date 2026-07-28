@@ -49,6 +49,11 @@ function sign(configuration) {
   const totpSecret = process.env.WINDOWS_SIGN_USER_TOTP_PROD;
   // const totpSecret = isNonProd ? process.env.WINDOWS_SIGN_USER_TOTP_NONPROD : process.env.WINDOWS_SIGN_USER_TOTP_PROD;
 
+  if (![credentialId, username, password, totpSecret].every(Boolean)) {
+    console.warn("Skipping Windows signing because SSL.com credentials are not configured.");
+    return;
+  }
+
   console.debug(`Signing file ${configuration.path}`);
   console.debug(`Using credential ID: ${credentialId} (${credentialId.length})`);
   console.debug(`Using username: ${username} (${username.length})`);
