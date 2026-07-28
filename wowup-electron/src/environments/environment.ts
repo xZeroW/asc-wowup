@@ -21,7 +21,7 @@ export const AppConfig = {
     apiKey: "{{CURSEFORGE_API_KEY}}",
   },
   ascension: {
-    catalogUrl: "http://localhost:3001/v1/ascension",
+    catalogUrl: "https://wowup-api.vercel.app/v1/ascension",
     websiteUrl: "https://dev.wowup.io/ascension",
   },
   autoUpdateIntervalMs: 3600000, // 1 hour

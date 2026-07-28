@@ -10,7 +10,7 @@ export const AppConfig = {
   wowUpApiUrl: "https://api.dev.wowup.io",
   wowUpHubUrl: "https://hub.dev.wowup.io",
   ascension: {
-    catalogUrl: "http://localhost:3001/v1/ascension",
+    catalogUrl: "https://wowup-api.vercel.app/v1/ascension",
     websiteUrl: "https://dev.wowup.io/ascension",
   },
   warcraftTavernNewsFeedUrl:
