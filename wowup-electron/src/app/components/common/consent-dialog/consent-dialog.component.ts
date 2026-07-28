@@ -71,8 +71,9 @@ export class ConsentDialogComponent implements AfterViewChecked, OnInit {
   public onSubmit(evt: any): void {
     evt.preventDefault();
 
-    console.log(this.consentOptions.value);
+    const consentOptions = this.consentOptions.value;
 
-    this.dialogRef.close(this.consentOptions.value);
+    this.consentOptions.reset();
+    this.dialogRef.close(consentOptions);
   }
 }
