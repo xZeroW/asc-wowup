@@ -4,7 +4,6 @@
   "directories": {
     "output": "release-ow/"
   },
-  "afterSign": "./electron-build/after-sign-ow.js",
   "generateUpdatesFilesForAllChannels": true,
   "publish": ["github"],
   "nodeGypRebuild": true,
@@ -20,16 +19,6 @@
   "nsis": {
     "deleteAppDataOnUninstall": true,
     "include": "./electron-build/uninstaller.nsh"
-  },
-  "mac": {
-    "icon": "electron-build/icon.icns",
-    "category": "public.app-category.games",
-    "target": [
-      {
-        "target": "default",
-        "arch": ["x64", "arm64"]
-      }
-    ]
   },
   "linux": {
     "icon": "electron-build/flatpak/",

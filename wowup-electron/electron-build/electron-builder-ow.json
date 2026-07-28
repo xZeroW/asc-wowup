@@ -4,7 +4,6 @@
   "directories": {
     "output": "release/"
   },
-  "afterSign": "./electron-build/after-sign-ow.js",
   "generateUpdatesFilesForAllChannels": true,
   "publish": [
     {
@@ -27,27 +26,6 @@
   },
   "nsis": {
     "deleteAppDataOnUninstall": true
-  },
-  "mac": {
-    "icon": "electron-build/icon.icns",
-    "category": "public.app-category.games",
-    "target": [
-      {
-        "target": "default",
-        "arch": ["x64", "arm64"]
-      }
-    ],
-    "hardenedRuntime": true,
-    "entitlements": "./electron-build/entitlements.mac.plist",
-    "extendInfo": {
-      "CFBundleURLTypes": [
-        {
-          "CFBundleTypeRole": "Shell",
-          "CFBundleURLName": "CurseForge",
-          "CFBundleURLSchemes": "curseforge"
-        }
-      ]
-    }
   },
   "linux": {
     "icon": "electron-build/flatpak/",

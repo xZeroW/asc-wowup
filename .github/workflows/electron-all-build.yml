@@ -29,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2022, "macos-latest"]
+        os: [ubuntu-latest, windows-2022]
         node-version: [24.x]
 
     steps:
@@ -51,40 +51,10 @@ jobs:
       - name: Install Angular CLI
         run: npm install -g @angular/cli
 
-      - name: dmg-license
-        if: matrix.os == 'macos-latest'
-        run: |
-          cd ./wowup-electron
-          npm i dmg-license
-
-      - name: Validate macOS signing certificate
-        if: matrix.os == 'macos-latest'
-        env:
-          CSC_LINK: ${{ secrets.MACOS_CERT }}
-        run: |
-          if [ -z "$CSC_LINK" ]; then
-            echo "MACOS_CERT must be configured before creating a signed macOS release."
-            exit 1
-          fi
-
       - name: Build Linux App
         if: matrix.os == 'ubuntu-latest'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        run: |
-          cd ./wowup-electron
-          npm i
-          npm run electron:publish
-
-      - name: Build Mac App
-        if: matrix.os == 'macos-latest'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-          CSC_LINK: ${{ secrets.MACOS_CERT }}
-          CSC_KEY_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
-          NOTARIZE_APPLE_ID: ${{ secrets.NOTARIZE_APPLE_ID }}
-          NOTARIZE_APPLE_PASSWORD: ${{ secrets.NOTARIZE_APPLE_PASSWORD }}
-          NOTARIZE_APPLE_TEAM_ID: ${{ secrets.NOTARIZE_APPLE_TEAM_ID }}
         run: |
           cd ./wowup-electron
           npm i
