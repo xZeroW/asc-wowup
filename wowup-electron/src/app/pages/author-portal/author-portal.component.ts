@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { NgForm } from "@angular/forms";
 import { Subject, takeUntil } from "rxjs";
 
 import {
@@ -22,6 +23,8 @@ interface ReleaseForm extends AscensionRelease {
   styleUrls: ["./author-portal.component.scss"],
 })
 export class AuthorPortalComponent implements OnInit, OnDestroy {
+  @ViewChild("authorForm") public authorForm?: NgForm;
+
   private readonly _destroy$ = new Subject<void>();
   public author?: AscensionAuthor;
   public loading = true;
@@ -124,10 +127,15 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
   }
 
   private async publish(): Promise<void> {
+    this.authorForm?.form.updateValueAndValidity();
     this.validationErrors = this.validate();
     this.error = "";
     this.success = "";
     if (Object.keys(this.validationErrors).length > 0) {
+      this.authorForm?.form.markAllAsTouched();
+      Object.keys(this.validationErrors).forEach((field) => {
+        this.authorForm?.controls[this.getControlName(field)]?.setErrors({ validation: true });
+      });
       this.error = "Complete the highlighted required fields before publishing.";
       return;
     }
@@ -178,6 +186,7 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
   private resetForm(): void {
     this.form = this.createEmptyForm();
     this.form.author = this.author?.login ?? "";
+    this.authorForm?.resetForm(this.form);
     this.editMode = false;
     this.error = "";
     this.success = "";
@@ -245,6 +254,20 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
       ...(this.form.thumbnailUrl.trim() ? { thumbnailUrl: this.form.thumbnailUrl.trim() } : {}),
       ...(this.editMode ? { id: this.form.id } : {}),
     };
+  }
+
+  private getControlName(field: string): string {
+    const releaseField = /^release-(\d+)-(id|version|folders|downloadUrl|releasedAt)$/.exec(field);
+    if (!releaseField) {
+      return field;
+    }
+
+    const [, index, name] = releaseField;
+    const controlNames: Record<string, string> = {
+      downloadUrl: "url",
+      releasedAt: "date",
+    };
+    return `release-${controlNames[name] ?? name}-${index}`;
   }
 
   private splitFolders(value: string): string[] {

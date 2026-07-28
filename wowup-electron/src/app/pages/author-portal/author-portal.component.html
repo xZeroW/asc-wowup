@@ -40,7 +40,7 @@
       </div>
 
       <div *ngIf="success" class="message success">{{ success }}</div>
-      <form novalidate>
+      <form #authorForm="ngForm" novalidate>
         <div class="field-grid">
           <mat-form-field>
             <mat-label>Name</mat-label>
