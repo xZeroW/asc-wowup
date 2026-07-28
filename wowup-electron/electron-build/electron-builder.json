@@ -6,7 +6,13 @@
   },
   "afterSign": "./electron-build/after-sign.js",
   "generateUpdatesFilesForAllChannels": true,
-  "publish": ["github"],
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "xZeroW",
+      "repo": "asc-wowup"
+    }
+  ],
   "nodeGypRebuild": true,
   "files": ["dist/**/*.*", "assets/**/*.*", "app-build/**/*.js", "src/common/**/*.js", "build/Release/*.node"],
   "win": {
