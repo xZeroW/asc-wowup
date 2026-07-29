@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="imgs/ascwowup.png" alt="Ascension WowUp">
+  <img src="imgs/ascwowup.png" alt="Ascension WowUp" width="200">
 </p>
 
 # Ascension WowUp Client Repository
