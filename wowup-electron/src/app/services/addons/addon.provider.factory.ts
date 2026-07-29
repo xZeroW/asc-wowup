@@ -93,27 +93,7 @@ export class AddonProviderFactory {
     if (this._providerMap.size !== 0) {
       return;
     }
-    const providers: AddonProvider[] = [
-      this.createZipAddonProvider(),
-      this.createRaiderIoAddonProvider(),
-      this.createWowUpCompanionAddonProvider(),
-      this.createWowUpAddonProvider(),
-      this.createAscensionAddonProvider(),
-    ];
-
-    if (AppConfig.wago.enabled) {
-      providers.push(this.createWagoAddonProvider());
-    }
-
-    if (AppConfig.curseforge.enabled) {
-      providers.push(this.createCurseProvider());
-    }
-
-    providers.push(
-      this.createTukUiAddonProvider(),
-      this.createWowInterfaceAddonProvider(),
-      this.createGitHubAddonProvider(),
-    );
+    const providers: AddonProvider[] = [this.createAscensionAddonProvider()];
 
     for (const provider of providers) {
       await this.setProviderState(provider);

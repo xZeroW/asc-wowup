@@ -38,7 +38,7 @@ export class AscensionAddonProvider extends AddonProvider {
   public readonly allowChannelChange = true;
   public readonly allowEdit = true;
   public readonly allowReScan = true;
-  public enabled = false;
+  public enabled = true;
   public providerNote = 'Community addons for Project Ascension (WoTLK 3.3.5).';
 
   public constructor(
