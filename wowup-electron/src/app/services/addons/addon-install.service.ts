@@ -120,6 +120,8 @@ export class AddonInstallService {
 
     let downloadedFilePath = "";
     let unzippedDirectory = "";
+    let addonDirectory = "";
+    const isGitHubZipball = this.isGitHubZipball(addon.downloadUrl);
 
     try {
       const downloadAuth = await addonProvider.getDownloadAuth();
@@ -172,7 +174,8 @@ export class AddonInstallService {
 
       try {
         unzippedDirectory = await this._fileService.unzipFile(downloadedFilePath, unzipPath);
-        await this.installUnzippedDirectory(unzippedDirectory, installation);
+        addonDirectory = await this.getAddonDirectory(unzippedDirectory, addon.downloadUrl);
+        await this.installUnzippedDirectory(addonDirectory, installation, isGitHubZipball ? addon.name : undefined);
       } catch (err) {
         console.error(err);
 
@@ -184,7 +187,9 @@ export class AddonInstallService {
         await this._fileService.removeAllSafe(...directoriesToBeRemoved);
       }
 
-      const unzippedDirectoryNames = await this._fileService.listDirectories(unzippedDirectory);
+      const unzippedDirectoryNames = isGitHubZipball
+        ? [addon.name]
+        : await this._fileService.listDirectories(addonDirectory);
       _.remove(unzippedDirectoryNames, (dirName) => IGNORED_FOLDER_NAMES.includes(dirName));
 
       const existingDirectoryNames = addon.installedFolderList ?? [];
@@ -206,11 +211,10 @@ export class AddonInstallService {
       addon.installedFolders = unzippedDirectoryNames.join(",");
       addon.isIgnored = addonProvider.forceIgnore;
 
-      const allTocFiles = await this._tocService.getAllTocs(
-        unzippedDirectory,
-        unzippedDirectoryNames,
-        addon.clientType,
-      );
+      const tocBaseDirectory = isGitHubZipball
+        ? this._warcraftService.getAddonFolderPath(installation)
+        : addonDirectory;
+      const allTocFiles = await this._tocService.getAllTocs(tocBaseDirectory, unzippedDirectoryNames, addon.clientType);
       const gameVersions = this.getLatestGameVersions(allTocFiles);
       if (gameVersions.length > 0) {
         addon.gameVersion = gameVersions;
@@ -318,8 +322,17 @@ export class AddonInstallService {
     return backupFolders;
   }
 
-  private async installUnzippedDirectory(unzippedDirectory: string, installation: WowInstallation) {
+  private async installUnzippedDirectory(
+    unzippedDirectory: string,
+    installation: WowInstallation,
+    targetFolder?: string,
+  ) {
     const addonFolderPath = this._warcraftService.getAddonFolderPath(installation);
+    if (targetFolder) {
+      await this._fileService.copy(unzippedDirectory, pathJoin(addonFolderPath, targetFolder));
+      return;
+    }
+
     const unzippedFolders = await this._fileService.listDirectories(unzippedDirectory);
     for (const unzippedFolder of unzippedFolders) {
       if (IGNORED_FOLDER_NAMES.includes(unzippedFolder)) {
@@ -336,6 +349,25 @@ export class AddonInstallService {
         throw err;
       }
     }
+  }
+
+  private async getAddonDirectory(unzippedDirectory: string, downloadUrl?: string): Promise<string> {
+    if (!this.isGitHubZipball(downloadUrl)) {
+      return unzippedDirectory;
+    }
+
+    const archiveFolders = await this._fileService.listDirectories(unzippedDirectory);
+    const repositoryFolder = archiveFolders.find((folder) => !IGNORED_FOLDER_NAMES.includes(folder));
+    if (!repositoryFolder) {
+      throw new Error("GitHub zipball did not contain a repository directory");
+    }
+
+    // GitHub zipballs wrap the addon folders in a generated owner-repository-hash directory.
+    return pathJoin(unzippedDirectory, repositoryFolder);
+  }
+
+  private isGitHubZipball(downloadUrl?: string): boolean {
+    return !!downloadUrl?.includes("/zipball/");
   }
 
   private async restoreAddonDirectories(directories: string[]) {

@@ -16,6 +16,15 @@ export class PatchNotesService {
 
 const CHANGELOGS: ChangeLog[] = [
   {
+    Version: "2.23.9",
+    html: `
+  <h4>Changes</h4>
+  <ul>
+  <li>Added support for Github Zipball</li>
+  </ul>
+  `,
+  },
+  {
     Version: "2.23.8",
     html: `
     <h4>Changes</h4>
