@@ -81,6 +81,45 @@ MyAscensionAddon/...
 
 Do not wrap the addon directory in another directory such as `my-repository-1.0.0/`. If an addon contains multiple folders, include each folder at the ZIP root and list every folder in the release's **Folders** field. Ensure the ZIP URL is publicly accessible before publishing.
 
+### Publish GitHub Releases Automatically
+
+For a GitHub addon, create `.github/workflows/release.yml` in the addon repository with the following workflow. Replace `MyAscensionAddon` with the folder or folders that WowUp installs. The folders are added directly to the ZIP root.
+
+```yaml
+name: Release addon
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package addon
+        run: zip -r MyAscensionAddon-${{ github.ref_name }}.zip MyAscensionAddon
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: MyAscensionAddon-${{ github.ref_name }}.zip
+```
+
+For multiple addon folders, add every folder to the `zip` command, for example `zip -r MyAddon-${{ github.ref_name }}.zip MyAddon MyAddon_Config`.
+
+In the author portal, set **GitHub repository** to `owner/repository` and enter the same installed folders in **Installed folders**. Publish a new version by committing the change, creating a version tag, and pushing it:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The workflow creates a GitHub Release and attaches the ZIP. Confirm the ZIP contains the addon folders at its root before relying on the release.
+
 ## Feedback
 
 If you have a question, comment, or request we have several ways you can communicate them.
