@@ -16,6 +16,16 @@ export class PatchNotesService {
 
 const CHANGELOGS: ChangeLog[] = [
   {
+    Version: "2.23.8",
+    html: `
+    <h4>Changes</h4>
+    <ul>
+    <li>Limit addon management to the Ascension provider</li>
+    <li>Updated README with instructions on how to add a Client and Author Portal</li>
+    </ul>
+    `,
+  },
+  {
     Version: "2.23.0",
     html: `
     <h4>Fixes</h4>
