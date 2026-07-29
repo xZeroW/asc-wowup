@@ -1,35 +1,24 @@
 <p align="center">
-  <img src="https://cdn.wowup.io/site/assets/icons/android-chrome-512x512.png" width="200" />
+  <img src="imgs/ascwowup.png" alt="Ascension WowUp">
 </p>
 
-# WowUp Client Repository
+# Ascension WowUp Client Repository
 
-[![WowUp on Discord](https://img.shields.io/static/v1?label=Discord&message=WowUp&color=7289DA)](https://discord.gg/rk4F5aD)
-[![WowUp on Patreon](https://img.shields.io/static/v1?label=Patreon&message=WowUp&color=f96854)](https://www.patreon.com/jliddev)
-
-This is the repository for our [WowUp](https://wowup.io) client with [CurseForge](https://curseforge.com) support for Windows, Mac, and Linux.
+This is the repository for our [WowUp](https://wowup.io) client with [Ascension WoW](https://ascension.gg) support for Windows and Linux.
 
 ## WowUp
 
 ![image](https://user-images.githubusercontent.com/20467484/150164985-673d02da-e7ec-42aa-b77d-655c8e3117ff.png)
 
-WowUp is the community centered World of Warcraft addon updater. We attempt to bring the addon community together in an easy to use updater application. We have an ever growing list of supported features.
-
-- Support for all major addon sources
-- Discover or find new addons across addon sources
+- Support for Ascension WoW addons
 - Handle all your different World of Warcraft clients
 - Auto updates
-- [Companion addon](https://github.com/WowUp/WowUp.Addon)
 
 ## Installing
 
 ### Latest Releases
 
-The latest WowUp release is always available on our website [wowup.io](https://wowup.io)
-
-### Beta Releases
-
-If you feel like helping us test the latest and greatest changes beta builds are available on [GitHub](https://github.com/WowUp/WowUp/releases)
+The latest Ascension WowUp release is always available on [Releases](https://github.com/xZeroW/asc-wowup/releases)
 
 ### Community Support Alternatives
 
