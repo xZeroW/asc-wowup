@@ -16,6 +16,15 @@ export class PatchNotesService {
 
 const CHANGELOGS: ChangeLog[] = [
   {
+    Version: "2.24.1",
+    html: `
+<h4>Changes</h4>
+<ul>
+<li>Add message when publishing a addon with no proper release</li>
+</ul>
+`,
+  },
+  {
     Version: "2.24.0",
     html: `
 <h4>Changes</h4>

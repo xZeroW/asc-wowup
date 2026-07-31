@@ -209,6 +209,17 @@ export class GitHubAddonProvider extends AddonProvider {
     return searchByUrlResult;
   }
 
+  public async hasReleases(repositoryPath: string): Promise<boolean> {
+    try {
+      return (await this.getReleases(repositoryPath)).length > 0;
+    } catch (error) {
+      if (error instanceof GitHubFetchReleasesError && error.innerError instanceof SourceRemovedAddonError) {
+        return false;
+      }
+      throw error;
+    }
+  }
+
   private createExternalId(addonUri: URL) {
     const parsed = this.parseRepoPath(addonUri.pathname);
     return `${parsed.owner}/${parsed.repository}`;

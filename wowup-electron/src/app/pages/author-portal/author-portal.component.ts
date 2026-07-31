@@ -11,7 +11,11 @@ import {
   AscensionApiError,
   AscensionRelease,
 } from "../../services/ascension/ascension-author-api.service";
+import { AddonProviderFactory } from "../../services/addons/addon.provider.factory";
+import { DialogFactory } from "../../services/dialog/dialog.factory";
 import { ElectronService } from "../../services/electron/electron.service";
+
+const PUBLISH_ADDON_GUIDE_URL = "https://github.com/xZeroW/asc-wowup#publish-an-addon";
 
 interface ReleaseForm extends AscensionRelease {
   foldersText: string;
@@ -41,6 +45,8 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
 
   public constructor(
     private _api: AscensionAuthorApiService,
+    private _addonProviderFactory: AddonProviderFactory,
+    private _dialogFactory: DialogFactory,
     private _electronService: ElectronService,
   ) {}
 
@@ -143,6 +149,19 @@ export class AuthorPortalComponent implements OnInit, OnDestroy {
     this.submitting = true;
     this.success = this.editMode ? "Saving addon..." : "Publishing addon...";
     try {
+      const githubRepository = this.normalizeGithubRepository(this.form.githubRepository);
+      if (!this.editMode && githubRepository) {
+        const hasReleases = await this._addonProviderFactory.createGitHubAddonProvider().hasReleases(githubRepository);
+        if (!hasReleases) {
+          this._dialogFactory.getErrorDialog(
+            "GitHub release required",
+            `This GitHub repository could not be found or does not have any releases. Add a release before publishing the addon. <a href="${PUBLISH_ADDON_GUIDE_URL}">View the publishing guide</a>.`,
+          );
+          this.success = "";
+          return;
+        }
+      }
+
       const result = this.editMode
         ? await this._api.updateAddon(this.form.id, this.toPayload())
         : await this._api.createAddon(this.toPayload());
