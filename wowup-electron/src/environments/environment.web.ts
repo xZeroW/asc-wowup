@@ -14,6 +14,10 @@ export const AppConfig = {
     catalogUrl: "https://wowup-api.vercel.app/v1/ascension",
     websiteUrl: "https://dev.wowup.io/ascension",
   },
+  felbite: {
+    catalogUrl: "https://wowup-api.vercel.app/v1/felbite",
+    websiteUrl: "https://felbite.com",
+  },
   warcraftTavernNewsFeedUrl:
     "https://www.warcrafttavern.com/?call_custom_simple_rss=1&csrp_post_type=wow-classic-news,tbc-classic-news,retail-news&csrp_thumbnail_size=medium",
   newsRefreshIntervalMs: 3600000, // 1 hour

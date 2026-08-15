@@ -52,6 +52,7 @@ import { AddonInstallState } from "./models/wowup/addon-install-state";
 import { ElectronService } from "./services";
 import { AddonProviderFactory } from "./services/addons/addon.provider.factory";
 import { AddonService } from "./services/addons/addon.service";
+import { AddonVoteService } from "./services/addons/addon-vote.service";
 import { AnalyticsService } from "./services/analytics/analytics.service";
 import { FileService } from "./services/files/file.service";
 import { LinkService } from "./services/links/link.service";
@@ -115,6 +116,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public constructor(
     private _addonService: AddonService,
+    private _addonVoteService: AddonVoteService,
     private _addonProviderService: AddonProviderFactory,
     private _analyticsService: AnalyticsService,
     private _cdRef: ChangeDetectorRef,

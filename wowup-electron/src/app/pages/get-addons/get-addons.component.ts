@@ -20,6 +20,7 @@ import { TranslateService } from "@ngx-translate/core";
 
 import {
   ADDON_PROVIDER_CURSEFORGEV2,
+  ADDON_PROVIDER_FELBITE,
   ADDON_PROVIDER_HUB,
   ADDON_PROVIDER_WAGO,
   DEFAULT_CHANNEL_PREFERENCE_KEY_SUFFIX,
@@ -28,6 +29,7 @@ import {
 import { GetAddonListItem } from "../../business-objects/get-addon-list-item";
 import { CellWrapTextComponent } from "../../components/common/cell-wrap-text/cell-wrap-text.component";
 import { GetAddonStatusColumnComponent } from "../../components/addons/get-addon-status-cell/get-addon-status-cell.component";
+import { AddonVoteCellComponent } from "../../components/addons/addon-vote-cell/addon-vote-cell.component";
 import { InstallFromUrlDialogComponent } from "../../components/addons/install-from-url-dialog/install-from-url-dialog.component";
 import {
   PotentialAddonTableCellComponent,
@@ -51,6 +53,7 @@ import { getEnumKeys } from "wowup-lib-core";
 import { camelToSnakeCase } from "../../utils/string.utils";
 
 import { AddonProviderFactory } from "../../services/addons/addon.provider.factory";
+import { AscensionAuthorApiService } from "../../services/ascension/ascension-author-api.service";
 import { AddonCategory, AddonChannelType, AddonSearchResult, WowClientType } from "wowup-lib-core";
 import { WowInstallation } from "wowup-lib-core";
 
@@ -108,6 +111,7 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
       visible: true,
       allowToggle: false,
     },
+    { name: "compatibilityVotes", display: "PAGES.GET_ADDONS.TABLE.VOTES_COLUMN_HEADER", visible: true },
     { name: "status", display: "PAGES.GET_ADDONS.TABLE.STATUS_COLUMN_HEADER", visible: true },
   ];
 
@@ -169,6 +173,7 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
         map((searchResults) => {
           const searchListItems = this.formatAddons(searchResults);
           this._rowDataSrc.next(searchListItems);
+          void this.loadCompatibilityVotes(searchListItems);
           this._showTableSrc.next(true);
           this._sessionService.setEnableControls(true);
         }),
@@ -190,6 +195,7 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
     private _dialogFactory: DialogFactory,
     private _cdRef: ChangeDetectorRef,
     private _addonService: AddonService,
+    private _ascensionApiService: AscensionAuthorApiService,
     private _sessionService: SessionService,
     private _wowUpService: WowUpService,
     private _translateService: TranslateService,
@@ -441,6 +447,13 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
         ...baseColumn,
       },
       {
+        field: "compatibilityVotes",
+        flex: 1,
+        headerName: this._translateService.instant("PAGES.GET_ADDONS.TABLE.VOTES_COLUMN_HEADER"),
+        cellRenderer: AddonVoteCellComponent,
+        ...baseColumn,
+      },
+      {
         field: "status",
         flex: 1,
         headerName: this._translateService.instant("PAGES.GET_ADDONS.TABLE.STATUS_COLUMN_HEADER"),
@@ -533,6 +546,7 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
         map((searchResults) => {
           const searchListItems = this.formatAddons(searchResults);
           this._rowDataSrc.next(searchListItems);
+          void this.loadCompatibilityVotes(searchListItems);
           this._showTableSrc.next(true);
           this._sessionService.setEnableControls(true);
         }),
@@ -586,6 +600,7 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
       .subscribe((addons) => {
         const listItems = this.formatAddons(addons);
         this._rowDataSrc.next(listItems);
+        void this.loadCompatibilityVotes(listItems);
         this._showTableSrc.next(true);
         this._sessionService.setEnableControls(true);
       });
@@ -609,6 +624,30 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
     }
 
     return this.sortAddons(addonList);
+  }
+
+  private async loadCompatibilityVotes(addons: GetAddonListItem[]): Promise<void> {
+    const addonIds = addons
+      .filter((addon) => addon.providerName === ADDON_PROVIDER_FELBITE)
+      .map((addon) => addon.externalId);
+    if (addonIds.length === 0) {
+      return;
+    }
+
+    try {
+      const votes = await this._ascensionApiService.getCompatibilityVotes(addonIds);
+      for (const addon of addons) {
+        if (addon.providerName === ADDON_PROVIDER_FELBITE) {
+          addon.compatibilityVotes = votes[addon.externalId] ?? { up: 0, down: 0 };
+        }
+      }
+
+      if (this._rowDataSrc.value === addons) {
+        this._rowDataSrc.next([...addons]);
+      }
+    } catch (error) {
+      console.error("Failed to get addon compatibility votes", error);
+    }
   }
 
   private sortAddons(addons: GetAddonListItem[]) {

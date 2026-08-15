@@ -25,6 +25,10 @@ export const AppConfig = {
     catalogUrl: "https://wowup-api.vercel.app/v1/ascension",
     websiteUrl: "https://dev.wowup.io/ascension",
   },
+  felbite: {
+    catalogUrl: "https://wowup-api.vercel.app/v1/felbite",
+    websiteUrl: "https://felbite.com",
+  },
   autoUpdateIntervalMs: 3600000, // 1 hour
   appUpdateIntervalMs: 3600000, // 1 hour
   defaultHttpTimeoutMs: 10000,

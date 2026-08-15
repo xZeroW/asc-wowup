@@ -16,6 +16,20 @@ export class PatchNotesService {
 
 const CHANGELOGS: ChangeLog[] = [
   {
+    Version: "2.25.0",
+    html: `
+<h4>Features</h4>
+<ul>
+<li>Add Felbite as an addon provider</li>
+<li>Let Ascension players vote on whether installed Felbite addons work</li>
+</ul>
+<h4>Changes</h4>
+<ul>
+<li>Show green and red compatibility vote totals for Felbite addons in Get Addons</li>
+</ul>
+`,
+  },
+  {
     Version: "2.24.1",
     html: `
 <h4>Changes</h4>

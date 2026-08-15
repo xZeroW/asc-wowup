@@ -1,0 +1,19 @@
+.dialog-buttons {
+  gap: 0.75rem;
+}
+
+.vote-button {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.4rem;
+}
+
+.wu-btn.vote-up {
+  border-color: #66bb6a;
+  color: #66bb6a;
+}
+
+.wu-btn.vote-down {
+  border-color: #ef5350;
+  color: #ef5350;
+}

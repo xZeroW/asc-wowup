@@ -1,5 +1,6 @@
 import { AddonChannelType, AddonSearchResult } from "wowup-lib-core";
 import { AddonInstallState } from "../models/wowup/addon-install-state";
+import { AddonCompatibilityVoteCounts } from "../services/ascension/ascension-author-api.service";
 import * as SearchResults from "../utils/search-result.utils";
 
 export class GetAddonListItem {
@@ -13,6 +14,7 @@ export class GetAddonListItem {
   public providerName: string;
   public latestAddonChannel: AddonChannelType;
   public canonicalName: string;
+  public compatibilityVotes?: AddonCompatibilityVoteCounts;
 
   public installState: AddonInstallState = AddonInstallState.Unknown;
 

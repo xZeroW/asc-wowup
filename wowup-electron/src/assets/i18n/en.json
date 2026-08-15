@@ -36,6 +36,12 @@
     "RESET_BUTTON": "Reset",
     "VERSION_MISMATCH": "This addon is already installed, but the versions do not match"
   },
+  "ADDON_VOTE": {
+    "TITLE": "Does this addon work with Ascension?",
+    "MESSAGE": "You installed {addonName} from Felbite. Let other Ascension players know whether it works.",
+    "WORKS": "Works",
+    "DOES_NOT_WORK": "Does not work"
+  },
   "ADS": {
     "AD_EXPLAINER_BUTTON": "This ad supports addon creators ❤",
     "AD_EXPLAINER_DIALOG": {
@@ -393,6 +399,7 @@
         "AUTHOR_COLUMN_HEADER": "Author(s)",
         "DOWNLOAD_COUNT_COLUMN_HEADER": "Downloads",
         "PROVIDER_COLUMN_HEADER": "Provider",
+        "VOTES_COLUMN_HEADER": "Votes (Up / Down)",
         "RELEASED_AT_COLUMN_HEADER": "Released At",
         "STATUS_COLUMN_HEADER": "Status"
       }

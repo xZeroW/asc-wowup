@@ -10,7 +10,8 @@ export type AddonProviderType =
   | 'Zip'
   | 'WowUpCompanion'
   | 'Wago'
-  | 'Ascension';
+  | 'Ascension'
+  | 'Felbite';
 
 export type AddonScanType = 'wowup' | 'curseforge';
 

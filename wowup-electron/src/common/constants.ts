@@ -17,6 +17,7 @@ export const ADDON_PROVIDER_WAGO = "Wago";
 export const ADDON_PROVIDER_WOWUP_COMPANION = "WowUpCompanion";
 export const ADDON_PROVIDER_ZIP = "Zip";
 export const ADDON_PROVIDER_ASCENSION = "Ascension";
+export const ADDON_PROVIDER_FELBITE = "Felbite";
 
 export const APP_PROTOCOL_NAME = "wowup";
 export const CURSE_PROTOCOL_NAME = "curseforge";
@@ -168,6 +169,7 @@ export const CLASSIC_PTR_LOCATION_KEY = "wow_classic_ptr_location"; // TODO remo
 export const BETA_LOCATION_KEY = "wow_beta_location"; // TODO remove, deprecated
 export const ACCT_PUSH_ENABLED_KEY = "acct_push_enabled";
 export const WAGO_PROMPT_KEY = "wago_prompt";
+export const ADDON_VOTE_PREFERENCE_KEY_PREFIX = "addon_vote_";
 export const PREF_TABS_COLLAPSED = "tabs_collapsed";
 export const PREF_CF2_API_KEY = "cf2_api_key";
 export const PREF_GITHUB_PERSONAL_ACCESS_TOKEN = "github_personal_access_token";

@@ -2,3 +2,4 @@ export const ADDON_PROVIDER_HUB = 'WowUpHub';
 export const ADDON_PROVIDER_WOWINTERFACE = 'WowInterface';
 export const ADDON_PROVIDER_TUKUI = 'TukUI';
 export const ADDON_PROVIDER_ASCENSION = 'Ascension';
+export const ADDON_PROVIDER_FELBITE = 'Felbite';

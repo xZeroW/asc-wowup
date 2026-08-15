@@ -38,6 +38,8 @@ import {
   faHistory,
   faMinimize,
   faUpRightFromSquare,
+  faThumbsDown,
+  faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faQuestionCircle,
@@ -100,6 +102,8 @@ export class IconService {
     this.addSvg(faCaretSquareLeft);
     this.addSvg(faMinimize);
     this.addSvg(faUpRightFromSquare);
+    this.addSvg(faThumbsUp);
+    this.addSvg(faThumbsDown);
   }
 
   private addSvg(icon: IconDefinition): void {

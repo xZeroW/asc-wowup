@@ -35,6 +35,11 @@ export interface AscensionAddonPayload {
 }
 
 export type AscensionAddon = AscensionAddonPayload & { id: string };
+export type AddonCompatibilityVote = "up" | "down";
+export interface AddonCompatibilityVoteCounts {
+  up: number;
+  down: number;
+}
 
 export class AscensionApiError extends Error {
   public constructor(
@@ -92,6 +97,27 @@ export class AscensionAuthorApiService {
       .subscribe({
         error: (error) => console.error("Failed to report Ascension download", error),
       });
+  }
+
+  public reportCompatibilityVote(addonId: string, providerName: string, vote: AddonCompatibilityVote): void {
+    this._http
+      .post(`${this._apiUrl}/v1/ascension/votes`, { addonId, providerName, vote }, { withCredentials: true })
+      .subscribe({
+        error: (error) => console.error("Failed to report addon compatibility vote", error),
+      });
+  }
+
+  public async getCompatibilityVotes(addonIds: string[]): Promise<Record<string, AddonCompatibilityVoteCounts>> {
+    if (addonIds.length === 0) {
+      return {};
+    }
+
+    return await firstValueFrom(
+      this._http.get<Record<string, AddonCompatibilityVoteCounts>>(
+        `${this._apiUrl}/v1/ascension/votes?providerName=Felbite&addonIds=${encodeURIComponent(addonIds.join(","))}`,
+        { withCredentials: true },
+      ),
+    );
   }
 
   public getOwnedAddons(): Promise<AscensionAddon[]> {

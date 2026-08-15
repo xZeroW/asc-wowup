@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>{{ "ADDON_VOTE.TITLE" | translate }}</h1>
+<div mat-dialog-content>
+  <p>{{ "ADDON_VOTE.MESSAGE" | translate: { addonName: data.addonName } }}</p>
+</div>
+<div mat-dialog-actions class="dialog-buttons">
+  <button class="wu-btn wu-btn-flat vote-button vote-up" type="button" (click)="vote('up')" cdkFocusInitial>
+    <mat-icon svgIcon="fas:thumbs-up"></mat-icon>
+    {{ "ADDON_VOTE.WORKS" | translate }}
+  </button>
+  <button class="wu-btn wu-btn-flat vote-button vote-down" type="button" (click)="vote('down')">
+    <mat-icon svgIcon="fas:thumbs-down"></mat-icon>
+    {{ "ADDON_VOTE.DOES_NOT_WORK" | translate }}
+  </button>
+</div>

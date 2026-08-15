@@ -20,7 +20,13 @@ import { SensitiveStorageService } from "../storage/sensitive-storage.service";
 import { UiMessageService } from "../ui-message/ui-message.service";
 import { AddonStorageService } from "../storage/addon-storage.service";
 import { CurseAddonProvider } from "../../addon-providers/curse-addon-provider";
-import { AscensionAddonProvider, WowUpAddonProvider, WowInterfaceAddonProvider, TukUiAddonProvider } from "wowup-lib-core";
+import {
+  AscensionAddonProvider,
+  FelbiteAddonProvider,
+  TukUiAddonProvider,
+  WowInterfaceAddonProvider,
+  WowUpAddonProvider,
+} from "wowup-lib-core";
 import { AppConfig } from "../../../environments/environment";
 import { GenericNetworkInterface } from "../../business-objects/generic-network-interface";
 import { WagoAddonProvider } from "../../addon-providers/wago-addon-provider";
@@ -39,6 +45,7 @@ export class AddonProviderFactory {
   private _wowInterfaceNetworkInterface: GenericNetworkInterface;
   private _tukuiNetworkInterface: GenericNetworkInterface;
   private _ascensionNetworkInterface: GenericNetworkInterface;
+  private _felbiteNetworkInterface: GenericNetworkInterface;
 
   public constructor(
     private _cachingService: CachingService,
@@ -86,6 +93,14 @@ export class AddonProviderFactory {
         AppConfig.defaultHttpTimeoutMs,
       ),
     );
+
+    this._felbiteNetworkInterface = new GenericNetworkInterface(
+      this._networkService.getCircuitBreaker(
+        "felbite_addon_provider",
+        AppConfig.defaultHttpResetTimeoutMs,
+        AppConfig.defaultHttpTimeoutMs,
+      ),
+    );
   }
 
   /** This is part of the APP_INITIALIZER and called before the app is bootstrapped */
@@ -93,7 +108,7 @@ export class AddonProviderFactory {
     if (this._providerMap.size !== 0) {
       return;
     }
-    const providers: AddonProvider[] = [this.createAscensionAddonProvider()];
+    const providers: AddonProvider[] = [this.createAscensionAddonProvider(), this.createFelbiteAddonProvider()];
 
     for (const provider of providers) {
       await this.setProviderState(provider);
@@ -184,6 +199,14 @@ export class AddonProviderFactory {
       AppConfig.ascension.catalogUrl,
       AppConfig.ascension.websiteUrl,
       this._ascensionNetworkInterface,
+    );
+  }
+
+  public createFelbiteAddonProvider(): FelbiteAddonProvider {
+    return new FelbiteAddonProvider(
+      AppConfig.felbite.catalogUrl,
+      AppConfig.felbite.websiteUrl,
+      this._felbiteNetworkInterface,
     );
   }
 

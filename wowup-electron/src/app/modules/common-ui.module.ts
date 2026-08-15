@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { TranslateModule } from "@ngx-translate/core";
 
 import { AlertDialogComponent } from "../components/common/alert-dialog/alert-dialog.component";
+import { AddonVoteDialogComponent } from "../components/common/addon-vote-dialog/addon-vote-dialog.component";
 import { AnimatedLogoComponent } from "../components/common/animated-logo/animated-logo.component";
 import { CellWrapTextComponent } from "../components/common/cell-wrap-text/cell-wrap-text.component";
 import { CenteredSnackbarComponent } from "../components/common/centered-snackbar/centered-snackbar.component";
@@ -26,6 +27,7 @@ import { ProgressBarComponent } from "../components/common/progress-bar/progress
     ProgressButtonComponent,
     ProgressBarComponent,
     ConfirmDialogComponent,
+    AddonVoteDialogComponent,
     AlertDialogComponent,
     AnimatedLogoComponent,
     ExternalUrlConfirmationDialogComponent,
@@ -43,6 +45,7 @@ import { ProgressBarComponent } from "../components/common/progress-bar/progress
     ProgressButtonComponent,
     ProgressBarComponent,
     ConfirmDialogComponent,
+    AddonVoteDialogComponent,
     AlertDialogComponent,
     AnimatedLogoComponent,
     ExternalUrlConfirmationDialogComponent,

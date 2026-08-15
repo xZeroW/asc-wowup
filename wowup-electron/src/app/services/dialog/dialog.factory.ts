@@ -6,6 +6,10 @@ import { AddonChannelType, AddonSearchResult } from "wowup-lib-core";
 import { AddonViewModel } from "../../business-objects/addon-view-model";
 import { AddonDetailComponent, AddonDetailModel } from "../../components/addons/addon-detail/addon-detail.component";
 import { AlertDialogComponent, AlertDialogData } from "../../components/common/alert-dialog/alert-dialog.component";
+import {
+  AddonVoteDialogComponent,
+  AddonVoteDialogData,
+} from "../../components/common/addon-vote-dialog/addon-vote-dialog.component";
 import { ConfirmDialogComponent } from "../../components/common/confirm-dialog/confirm-dialog.component";
 
 @Injectable({
@@ -35,6 +39,12 @@ export class DialogFactory {
       title,
       message,
     });
+  }
+
+  public getAddonVoteDialog(
+    data: AddonVoteDialogData,
+  ): MatDialogRef<AddonVoteDialogComponent, "up" | "down" | undefined> {
+    return this._dialog.open(AddonVoteDialogComponent, { data, disableClose: true });
   }
 
   public getPotentialAddonDetailsDialog(

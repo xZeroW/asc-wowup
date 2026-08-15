@@ -23,6 +23,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { AddonManageDialogComponent } from "../components/addons/addon-manage-dialog/addon-manage-dialog.component";
 import { WtfBackupComponent } from "../components/addons/wtf-backup/wtf-backup.component";
 import { GameVersionCellComponent } from "../components/addons/game-version-cell/game-version-cell.component";
+import { AddonVoteCellComponent } from "../components/addons/addon-vote-cell/addon-vote-cell.component";
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { GameVersionCellComponent } from "../components/addons/game-version-cell
     TableContextHeaderCellComponent,
     MyAddonStatusCellComponent,
     GameVersionCellComponent,
+    AddonVoteCellComponent,
     InstallFromProtocolDialogComponent,
     MyAddonsAddonCellComponent,
     InstallFromUrlDialogComponent,
@@ -66,6 +68,7 @@ import { GameVersionCellComponent } from "../components/addons/game-version-cell
     TableContextHeaderCellComponent,
     MyAddonStatusCellComponent,
     GameVersionCellComponent,
+    AddonVoteCellComponent,
     InstallFromProtocolDialogComponent,
     MyAddonsAddonCellComponent,
     InstallFromUrlDialogComponent,
