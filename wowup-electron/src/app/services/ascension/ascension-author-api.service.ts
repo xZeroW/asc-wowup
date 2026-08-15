@@ -1,10 +1,14 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { firstValueFrom } from "rxjs";
+import { v4 as uuidv4 } from "uuid";
 
 import { AppConfig } from "../../../environments/environment";
-import { IPC_ASCENSION_AUTHOR_API_REQUEST } from "../../../common/constants";
+import { IPC_ASCENSION_AUTHOR_API_REQUEST, STORAGE_ASCENSION_CLIENT_ID } from "../../../common/constants";
 import { ElectronService } from "../electron/electron.service";
+import { PreferenceStorageService } from "../storage/preference-storage.service";
+
+export type AscensionTelemetryEventType = "update_available" | "download_started" | "download_completed" | "install_succeeded" | "install_failed";
 
 export interface AscensionAuthor {
   login: string;
@@ -54,10 +58,13 @@ export class AscensionApiError extends Error {
 export class AscensionAuthorApiService {
   private readonly _apiUrl = AppConfig.ascension.apiUrl;
   private readonly _catalogUrl = AppConfig.ascension.catalogUrl;
+  private _clientId?: string;
+  private _appVersion?: string;
 
   public constructor(
     private _http: HttpClient,
     private _electronService: ElectronService,
+    private _preferenceStorageService: PreferenceStorageService,
   ) {}
 
   public async getAuthor(): Promise<AscensionAuthor | undefined> {
@@ -91,12 +98,72 @@ export class AscensionAuthorApiService {
     );
   }
 
+  public getTelemetryHeaders(): Record<string, string> {
+    try {
+      return {
+        "x-client-id": this.getClientId(),
+        "x-client-version": this._appVersion ?? "",
+        "x-client-os": this.getOs(),
+      };
+    } catch (error) {
+      console.error("Failed to create Ascension telemetry headers", error);
+      return {};
+    }
+  }
+
+  public getClientId(): string {
+    if (!this._clientId) {
+      const stored = this._preferenceStorageService.getSync<string>(STORAGE_ASCENSION_CLIENT_ID);
+      if (stored) {
+        this._clientId = stored;
+      } else {
+        this._clientId = uuidv4();
+        this._preferenceStorageService.setAsync(STORAGE_ASCENSION_CLIENT_ID, this._clientId).catch(console.error);
+      }
+    }
+    return this._clientId;
+  }
+
+  public getOs(): string {
+    return typeof process !== "undefined" && process.platform ? process.platform : "";
+  }
+
+  public async getClientVersion(): Promise<string> {
+    if (!this._appVersion) {
+      try {
+        this._appVersion = await this._electronService.getVersionNumber();
+      } catch (error) {
+        console.error("Failed to resolve Ascension client version", error);
+      }
+    }
+    return this._appVersion ?? "";
+  }
+
   public reportDownload(addonId: string, releaseId?: string): void {
-    this._http
-      .post(`${this._apiUrl}/v1/telemetry/downloads`, { addonId, releaseId }, { withCredentials: true })
-      .subscribe({
-        error: (error) => console.error("Failed to report Ascension download", error),
-      });
+    this.reportTelemetry("download_completed", addonId, releaseId);
+  }
+
+  public reportTelemetry(type: AscensionTelemetryEventType, addonId: string, releaseId?: string, error?: string): void {
+    this.getClientVersion()
+      .then((version) => {
+        const body: Record<string, string> = {
+          type,
+          addonId,
+          version,
+          os: this.getOs(),
+          clientId: this.getClientId(),
+        };
+        if (releaseId) {
+          body.releaseId = releaseId;
+        }
+        if (error) {
+          body.error = error;
+        }
+        this._http.post(`${this._apiUrl}/v1/telemetry/events`, body, { withCredentials: true }).subscribe({
+          error: (err) => console.error("Failed to report Ascension telemetry", err),
+        });
+      })
+      .catch((err) => console.error("Failed to report Ascension telemetry", err));
   }
 
   public reportCompatibilityVote(addonId: string, providerName: string, vote: AddonCompatibilityVote): void {

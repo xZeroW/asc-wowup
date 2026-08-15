@@ -16,6 +16,16 @@ export class PatchNotesService {
 
 const CHANGELOGS: ChangeLog[] = [
   {
+    Version: "2.25.1",
+    html: `
+<h4>Changes</h4>
+<ul>
+<li>Improved Ascension and Felbite addon telemetry for updates, downloads, and installs</li>
+<li>Telemetry failures no longer affect catalog requests or addon installs</li>
+</ul>
+`,
+  },
+  {
     Version: "2.25.0",
     html: `
 <h4>Features</h4>

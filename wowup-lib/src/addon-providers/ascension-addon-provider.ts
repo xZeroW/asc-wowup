@@ -45,6 +45,7 @@ export class AscensionAddonProvider extends AddonProvider {
     private _catalogUrl: string,
     private _websiteUrl: string,
     private _networkInterface: NetworkInterface,
+    private _headersProvider?: () => Record<string, string>,
   ) {
     super();
     this._catalogUrl = this._catalogUrl.replace(/\/$/, '');
@@ -101,7 +102,7 @@ export class AscensionAddonProvider extends AddonProvider {
       return undefined;
     }
 
-    const addon = await this._networkInterface.getJson<AscensionCatalogAddon>(`${this._catalogUrl}/addons/${addonId}`);
+    const addon = await this._networkInterface.getJson<AscensionCatalogAddon>(`${this._catalogUrl}/addons/${addonId}`, { headers: this.getHeaders() });
     return this.toSearchResult(addon, installation);
   }
 
@@ -164,7 +165,7 @@ export class AscensionAddonProvider extends AddonProvider {
 
   private async getCatalogAddons(installation: WowInstallation, query = ''): Promise<AddonSearchResult[]> {
     const url = `${this._catalogUrl}/addons${query ? `?${query}` : ''}`;
-    const addons = await this._networkInterface.getJson<AscensionCatalogAddon[]>(url);
+    const addons = await this._networkInterface.getJson<AscensionCatalogAddon[]>(url, { headers: this.getHeaders() });
     return addons
       .map((addon) => this.toSearchResult(addon, installation))
       .filter((addon): addon is AddonSearchResult => addon !== undefined);
@@ -175,7 +176,7 @@ export class AscensionAddonProvider extends AddonProvider {
       if (!this.isAscensionInstallation(installation) || !this.isValidAddonId(addonId)) {
         return undefined;
       }
-      return await this._networkInterface.getJson<AscensionCatalogAddon>(`${this._catalogUrl}/addons/${addonId}`);
+      return await this._networkInterface.getJson<AscensionCatalogAddon>(`${this._catalogUrl}/addons/${addonId}`, { headers: this.getHeaders() });
     } catch (error) {
       console.error('Failed to get Ascension addon details', error);
       return undefined;
@@ -264,6 +265,15 @@ export class AscensionAddonProvider extends AddonProvider {
       thumbnailUrl: result.thumbnailUrl,
       updatedAt: file.releaseDate,
     };
+  }
+
+  private getHeaders(): Record<string, string> {
+    try {
+      return this._headersProvider?.() ?? {};
+    } catch (error) {
+      console.error('Failed to create Ascension telemetry headers', error);
+      return {};
+    }
   }
 
   private isAscensionInstallation(installation: WowInstallation): boolean {

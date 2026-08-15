@@ -19,6 +19,7 @@ import { TocService } from "../toc/toc.service";
 
 import {
   ADDON_PROVIDER_ASCENSION,
+  ADDON_PROVIDER_FELBITE,
   ADDON_PROVIDER_RAIDERIO,
   ADDON_PROVIDER_TUKUI,
   ADDON_PROVIDER_UNKNOWN,
@@ -30,7 +31,7 @@ import {
 } from "../../../common/constants";
 import { AddonStorageService } from "../storage/addon-storage.service";
 import { AnalyticsService } from "../analytics/analytics.service";
-import { AscensionAuthorApiService } from "../ascension/ascension-author-api.service";
+import { AscensionAuthorApiService, AscensionTelemetryEventType } from "../ascension/ascension-author-api.service";
 import { getEnumName } from "wowup-lib-core";
 
 export type InstallType = "install" | "update" | "remove";
@@ -127,6 +128,7 @@ export class AddonInstallService {
     const isGitHubZipball = this.isGitHubZipball(addon.downloadUrl);
 
     try {
+      this.reportAscensionEvent("download_started", addon);
       const downloadAuth = await addonProvider.getDownloadAuth();
       console.debug(`Download auth for ${addon.name}:`, downloadAuth);
 
@@ -157,12 +159,7 @@ export class AddonInstallService {
         }
       }
 
-      if (addon.providerName === ADDON_PROVIDER_ASCENSION) {
-        this._ascensionApiService.reportDownload(
-          addon.externalId ?? "",
-          addon.externalLatestReleaseId ?? addon.installedExternalReleaseId,
-        );
-      }
+      this.reportAscensionEvent("download_completed", addon);
 
       onUpdate?.call(this, AddonInstallState.BackingUp, 50);
       this._addonInstalledSrc.next({
@@ -253,6 +250,8 @@ export class AddonInstallService {
 
       await this.reconcileAddonFolders(addon);
 
+      this.reportAscensionEvent("install_succeeded", addon);
+
       queueItem.completion.resolve();
 
       onUpdate?.call(this, AddonInstallState.Complete, 100);
@@ -269,6 +268,7 @@ export class AddonInstallService {
       );
     } catch (err) {
       console.error(err);
+      this.reportAscensionEvent("install_failed", addon, downloadedFilePath.length === 0 ? "download_failed" : "install_failed");
       queueItem.completion.reject(err);
 
       onUpdate?.call(this, AddonInstallState.Error, 100);
@@ -292,6 +292,18 @@ export class AddonInstallService {
     }
     return addon.name;
   };
+
+  private reportAscensionEvent(type: AscensionTelemetryEventType, addon: Addon, error?: string): void {
+    if (![ADDON_PROVIDER_ASCENSION, ADDON_PROVIDER_FELBITE].includes(addon.providerName ?? "")) {
+      return;
+    }
+    this._ascensionApiService.reportTelemetry(
+      type,
+      addon.externalId ?? "",
+      addon.externalLatestReleaseId ?? addon.installedExternalReleaseId,
+      error,
+    );
+  }
 
   private logAddonAction(action: string, addon: Addon, ...extras: string[]) {
     console.log(

@@ -30,6 +30,7 @@ import {
 import { AppConfig } from "../../../environments/environment";
 import { GenericNetworkInterface } from "../../business-objects/generic-network-interface";
 import { WagoAddonProvider } from "../../addon-providers/wago-addon-provider";
+import { AscensionAuthorApiService } from "../ascension/ascension-author-api.service";
 
 @Injectable({
   providedIn: "root",
@@ -61,6 +62,7 @@ export class AddonProviderFactory {
     private _sensitiveStorageService: SensitiveStorageService,
     private _uiMessageService: UiMessageService,
     private _addonStorageService: AddonStorageService,
+    private _ascensionAuthorApiService: AscensionAuthorApiService,
   ) {
     this._wowupNetworkInterface = new GenericNetworkInterface(
       this._networkService.getCircuitBreaker(
@@ -108,6 +110,7 @@ export class AddonProviderFactory {
     if (this._providerMap.size !== 0) {
       return;
     }
+    void this._ascensionAuthorApiService.getClientVersion();
     const providers: AddonProvider[] = [this.createAscensionAddonProvider(), this.createFelbiteAddonProvider()];
 
     for (const provider of providers) {
@@ -199,6 +202,7 @@ export class AddonProviderFactory {
       AppConfig.ascension.catalogUrl,
       AppConfig.ascension.websiteUrl,
       this._ascensionNetworkInterface,
+      () => this._ascensionAuthorApiService.getTelemetryHeaders(),
     );
   }
 
@@ -207,6 +211,7 @@ export class AddonProviderFactory {
       AppConfig.felbite.catalogUrl,
       AppConfig.felbite.websiteUrl,
       this._felbiteNetworkInterface,
+      () => this._ascensionAuthorApiService.getTelemetryHeaders(),
     );
   }
 

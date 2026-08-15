@@ -43,6 +43,7 @@ export class FelbiteAddonProvider extends AddonProvider {
     private _catalogUrl: string,
     private _websiteUrl: string,
     private _networkInterface: NetworkInterface,
+    private _headersProvider?: () => Record<string, string>,
   ) {
     super();
     this._catalogUrl = this._catalogUrl.replace(/\/$/, '');
@@ -98,7 +99,7 @@ export class FelbiteAddonProvider extends AddonProvider {
       return undefined;
     }
 
-    const addon = await this._networkInterface.getJson<FelbiteCatalogAddon>(`${this._catalogUrl}/addons/${addonId}`);
+    const addon = await this._networkInterface.getJson<FelbiteCatalogAddon>(`${this._catalogUrl}/addons/${addonId}`, { headers: this.getHeaders() });
     return this.toSearchResult(addon, installation);
   }
 
@@ -118,7 +119,7 @@ export class FelbiteAddonProvider extends AddonProvider {
     }
 
     try {
-      const addon = await this._networkInterface.getJson<FelbiteCatalogAddon>(`${this._catalogUrl}/addons/${externalId}`);
+      const addon = await this._networkInterface.getJson<FelbiteCatalogAddon>(`${this._catalogUrl}/addons/${externalId}`, { headers: this.getHeaders() });
       return addon.description ?? addon.summary ?? '';
     } catch (error) {
       console.error('Failed to get Felbite addon details', error);
@@ -139,7 +140,7 @@ export class FelbiteAddonProvider extends AddonProvider {
 
   private async getCatalogAddons(installation: WowInstallation, query = ''): Promise<AddonSearchResult[]> {
     const url = `${this._catalogUrl}/addons${query ? `?${query}` : ''}`;
-    const addons = await this._networkInterface.getJson<FelbiteCatalogAddon[]>(url);
+    const addons = await this._networkInterface.getJson<FelbiteCatalogAddon[]>(url, { headers: this.getHeaders() });
     return addons
       .map((addon) => this.toSearchResult(addon, installation))
       .filter((addon): addon is AddonSearchResult => addon !== undefined);
@@ -151,6 +152,15 @@ export class FelbiteAddonProvider extends AddonProvider {
       throw new Error(`Unhandled Felbite URL: ${addonUri.toString()}`);
     }
     return match[1];
+  }
+
+  private getHeaders(): Record<string, string> {
+    try {
+      return this._headersProvider?.() ?? {};
+    } catch (error) {
+      console.error('Failed to create Felbite telemetry headers', error);
+      return {};
+    }
   }
 
   private toSearchResult(addon: FelbiteCatalogAddon, installation: WowInstallation): AddonSearchResult | undefined {

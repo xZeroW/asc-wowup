@@ -133,6 +133,7 @@ export const ADDON_STORE_NAME = "addons";
 export const PREFERENCE_STORE_NAME = "preferences";
 export const SENSITIVE_STORE_NAME = "sensitive";
 export const STORAGE_WOWUP_AUTH_TOKEN = "wowup-auth-token";
+export const STORAGE_ASCENSION_CLIENT_ID = "ascension-telemetry-client-id";
 
 // PREFERENCES
 export const ENABLE_SYSTEM_NOTIFICATIONS_PREFERENCE_KEY = "enable_system_notifications";

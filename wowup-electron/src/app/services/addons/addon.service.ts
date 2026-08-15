@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from "uuid";
 import { Injectable } from "@angular/core";
 
 import {
+  ADDON_PROVIDER_ASCENSION,
+  ADDON_PROVIDER_FELBITE,
   ADDON_PROVIDER_CURSEFORGE,
   ADDON_PROVIDER_CURSEFORGEV2,
   ADDON_PROVIDER_HUB,
@@ -67,6 +69,7 @@ import {
 import { AddonInstallService, InstallQueueItem, InstallType } from "./addon-install.service";
 import { strIsNotNullOrEmpty } from "../../utils/string.utils";
 import { delayMs } from "../../utils/time.utils";
+import { AscensionAuthorApiService } from "../ascension/ascension-author-api.service";
 
 export enum ScanUpdateType {
   Start,
@@ -140,6 +143,7 @@ export class AddonService {
     private _warcraftInstallationService: WarcraftInstallationService,
     private _addonProviderService: AddonProviderFactory,
     private _addonFingerprintService: AddonFingerprintService,
+    private _ascensionApiService: AscensionAuthorApiService,
   ) {
     // This should keep the current update queue state snapshot up to date
     this.addonInstalled$
@@ -1081,6 +1085,14 @@ export class AddonService {
         ) {
           // There was nothing new to update to, just update what we need to
           continue;
+        }
+
+        if ([ADDON_PROVIDER_ASCENSION, ADDON_PROVIDER_FELBITE].includes(addon.providerName ?? "")) {
+          this._ascensionApiService.reportTelemetry(
+            "update_available",
+            addon.externalId ?? "",
+            latestFile.externalId,
+          );
         }
 
         addon.latestVersion = latestFile.version;
