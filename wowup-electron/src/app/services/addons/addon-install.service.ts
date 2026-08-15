@@ -18,6 +18,7 @@ import { WowInstallation } from "wowup-lib-core";
 import { TocService } from "../toc/toc.service";
 
 import {
+  ADDON_PROVIDER_ASCENSION,
   ADDON_PROVIDER_RAIDERIO,
   ADDON_PROVIDER_TUKUI,
   ADDON_PROVIDER_UNKNOWN,
@@ -29,6 +30,7 @@ import {
 } from "../../../common/constants";
 import { AddonStorageService } from "../storage/addon-storage.service";
 import { AnalyticsService } from "../analytics/analytics.service";
+import { AscensionAuthorApiService } from "../ascension/ascension-author-api.service";
 import { getEnumName } from "wowup-lib-core";
 
 export type InstallType = "install" | "update" | "remove";
@@ -71,6 +73,7 @@ export class AddonInstallService {
     private _tocService: TocService,
     private _addonStorage: AddonStorageService,
     private _analyticsService: AnalyticsService,
+    private _ascensionApiService: AscensionAuthorApiService,
   ) {
     // Setup our install queue pump here
     this._installQueue.pipe(mergeMap((item) => from(this.processInstallQueue(item)), 3)).subscribe({
@@ -152,6 +155,13 @@ export class AddonInstallService {
           });
           await onUpdate?.call(this, AddonInstallState.Retry, 0);
         }
+      }
+
+      if (addon.providerName === ADDON_PROVIDER_ASCENSION) {
+        this._ascensionApiService.reportDownload(
+          addon.externalId ?? "",
+          addon.externalLatestReleaseId ?? addon.installedExternalReleaseId,
+        );
       }
 
       onUpdate?.call(this, AddonInstallState.BackingUp, 50);

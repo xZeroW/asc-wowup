@@ -86,6 +86,14 @@ export class AscensionAuthorApiService {
     );
   }
 
+  public reportDownload(addonId: string, releaseId?: string): void {
+    this._http
+      .post(`${this._apiUrl}/v1/telemetry/downloads`, { addonId, releaseId }, { withCredentials: true })
+      .subscribe({
+        error: (error) => console.error("Failed to report Ascension download", error),
+      });
+  }
+
   public getOwnedAddons(): Promise<AscensionAddon[]> {
     return this.request<AscensionAddon[]>("GET", "/v1/ascension/addons/mine");
   }
