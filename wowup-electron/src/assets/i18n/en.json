@@ -215,16 +215,16 @@
       "TOOLTIP": "{dependencyCount} required {dependencyCount, plural, =1{dependency} other{dependencies}}"
     },
     "DOWNLOAD_COUNT": {
-      "e+0": "few",
+      "e+0": "{count}",
       "e+1": "{count}",
       "e+2": "{count}",
-      "e+3": "{count} thousand",
-      "e+4": "{count} thousand",
-      "e+5": "{count} thousand",
-      "e+6": "{count} million",
-      "e+7": "{count} million",
-      "e+8": "{count} million",
-      "e+9": "{count} billion"
+      "e+3": "{count}K",
+      "e+4": "{count}K",
+      "e+5": "{count}K",
+      "e+6": "{count}M",
+      "e+7": "{count}M",
+      "e+8": "{count}M",
+      "e+9": "{count}B"
     },
     "ENUM": {
       "ADDON_CHANNEL_TYPE": {
