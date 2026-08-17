@@ -268,7 +268,11 @@ export class AddonInstallService {
       );
     } catch (err) {
       console.error(err);
-      this.reportAscensionEvent("install_failed", addon, downloadedFilePath.length === 0 ? "download_failed" : "install_failed");
+      this.reportAscensionEvent(
+        "install_failed",
+        addon,
+        this.getInstallErrorMessage(err, downloadedFilePath.length === 0),
+      );
       queueItem.completion.reject(err);
 
       onUpdate?.call(this, AddonInstallState.Error, 100);
@@ -303,6 +307,17 @@ export class AddonInstallService {
       addon.externalLatestReleaseId ?? addon.installedExternalReleaseId,
       error,
     );
+  }
+
+  private getInstallErrorMessage(error: unknown, downloadFailed: boolean): string {
+    const stage = downloadFailed ? "download_failed" : "install_failed";
+    if (error instanceof Error && error.message) {
+      return `${stage}: ${error.message}`;
+    }
+    if (typeof error === "string") {
+      return `${stage}: ${error}`;
+    }
+    return stage;
   }
 
   private logAddonAction(action: string, addon: Addon, ...extras: string[]) {
