@@ -20,30 +20,6 @@ This is the repository for our [WowUp](https://wowup.io) client with [Ascension 
 
 The latest Ascension WowUp release is always available on [Releases](https://github.com/xZeroW/asc-wowup/releases)
 
-### Community Support Alternatives
-
-#### [WinGet](https://learn.microsoft.com/en-us/windows/package-manager/winget/)
-
-Ships with Windows 10 and 11.  You can install WowUp With Wago using:
-
-```cmd
-winget install wowup.wowup
-```
-
-Or Wowup with CurseForge with:
-
-```cmd
-winget install wowup.cf
-```
-
-#### [Chocolatey](https://chocolatey.org)
-
-You can also install the latest version via Chocolatey package manager:
-
-```cmd
-choco install wowup
-```
-
 ## Adding a Client
 
 WowUp automatically detects installed World of Warcraft clients. To add one manually:
