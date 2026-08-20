@@ -17,6 +17,7 @@
   "win": {
     "icon": "electron-build/icon-cf.ico",
     "target": ["nsis", "portable"],
+    "requestedExecutionLevel": "requireAdministrator",
     "forceCodeSigning": false,
     "signtoolOptions": {
       "sign": "./electron-build/sign-windows.js",

@@ -16,6 +16,15 @@ export class PatchNotesService {
 
 const CHANGELOGS: ChangeLog[] = [
   {
+    Version: "2.25.3",
+    html: `
+<h4>Fixes</h4>
+<ul>
+<li>Fix addon installs failing when the game is installed under a protected Windows folder</li>
+</ul>
+`,
+  },
+  {
     Version: "2.25.2",
     html: `
 <h4>Fixes</h4>

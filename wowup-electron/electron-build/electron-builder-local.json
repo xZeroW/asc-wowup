@@ -11,6 +11,7 @@
   "win": {
     "icon": "electron-build/icon.ico",
     "target": ["nsis", "portable"],
+    "requestedExecutionLevel": "requireAdministrator",
     "signtoolOptions": {
       "sign": "./electron-build/sign-windows.js",
       "signingHashAlgorithms": ["sha256"]
